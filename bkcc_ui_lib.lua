@@ -330,7 +330,9 @@ do
             writefile(Image, ImageFile)
         end
         --
-        return ImageFile
+        -- currently no (public) Drawing.lib supports image 'Data' attribute, so we will bypass it by using 'DataURL' attribute
+        -- return ImageFile
+        -- return Url
     end
 end
 --
@@ -385,7 +387,7 @@ do
             Position = WindowFrame.Position,
             Transparency = 1, 
             Visible = true,
-            Data = Library.Theme.Gradient
+            DataURL = Library.Theme.Gradient
         })
         --
         local WindowTitle = Utility.AddDrawing("Text", {
@@ -440,7 +442,7 @@ do
             Size = Vector2.new(SliderInline.Size.X - 2, SliderInline.Size.Y - 2),
             Transparency = 1, 
             Visible = true,
-            Data = Library.Theme.Gradient
+            DataURL = Library.Theme.Gradient
         })
         --
         local MiddleIcon = Utility.AddDrawing("Image", {
@@ -448,7 +450,7 @@ do
             Rounding = 5,
             Transparency = 1, 
             Visible = true,
-            Data = Library.Theme.Logo
+            DataURL = Library.Theme.Logo
         })
         --
         MiddleIcon.Position = Vector2.new(WindowOutline.Position.X + (WindowOutline.Size.X / 2) - (MiddleIcon.Size.X / 2), WindowOutline.Position.Y + (WindowOutline.Size.Y / 2) - (MiddleIcon.Size.Y / 2) - 15)
@@ -650,7 +652,7 @@ do
                 Position = WindowFrame.Position,
                 Transparency = 1, 
                 Visible = true,
-                Data = Library.Theme.Gradient
+                DataURL = Library.Theme.Gradient
             }, Library.Keybind)
             --
             local WindowText = Utility.AddDrawing("Text", {
@@ -749,7 +751,7 @@ do
             Transparency = 1,
             ZIndex = 3,
             Visible = false,
-            Data = Library.Theme.Logo
+            DataURL = Library.Theme.Logo
         })
         --
         Utility.AddCursor(WindowFrame)
@@ -780,7 +782,7 @@ do
             Position = WindowFrame.Position,
             Transparency = 1, 
             Visible = true,
-            Data = Library.Theme.Gradient
+            DataURL = Library.Theme.Gradient
         })
         --
         local WindowTitle = Utility.AddDrawing("Text", {
@@ -926,7 +928,7 @@ do
                 Position = NotificationOutlineBorder.Position,
                 Transparency = 1, 
                 Visible = true,
-                Data = Library.Theme.Gradient
+                DataURL = Library.Theme.Gradient
             }, Library.Ignores)
             --
             local NotificationText = Utility.AddDrawing("Text", {
@@ -1248,7 +1250,7 @@ do
                     local ToggleGradient = Utility.AddDrawing("Image", {
                         Size = Vector2.new(ToggleInline.Size.X - 2, ToggleInline.Size.Y - 2),
                         Position = Vector2.new(ToggleInline.Position.X + 1, ToggleInline.Position.Y + 1),
-                        Data = Library.Theme.Gradient,
+                        DataURL = Library.Theme.Gradient,
                         Transparency = 0.5,
                         Visible = true
                     })
@@ -1383,7 +1385,7 @@ do
                         local ColorpickerGradient = Utility.AddDrawing("Image", {
                             Size = Vector2.new(ColorpickerInline.Size.X - 2, ColorpickerInline.Size.Y - 2),
                             Position = Vector2.new(ColorpickerInline.Position.X + 1, ColorpickerInline.Position.Y + 1),
-                            Data = Library.Theme.Gradient,
+                            DataURL = Library.Theme.Gradient,
                             Transparency = 0.5,
                             Visible = true
                         })
@@ -1459,7 +1461,7 @@ do
                         local InternalSaturation = Utility.AddDrawing("Image", {
                             Size = Vector2.new(196 - 2, 196 - 2),
                             Position = Vector2.new(InternalOutline.Position.X + 8 + 1, InternalOutline.Position.Y + 25 + 1),
-                            Data = Library.Theme.Saturation,
+                            DataURL = Library.Theme.Saturation,
                             Transparency = 1,
                             Visible = true,
                             ZIndex = 3
@@ -1478,7 +1480,7 @@ do
                         local InternalHue = Utility.AddDrawing("Image", {
                             Size = Vector2.new(InternalHueInline.Size.X - 2, InternalHueInline.Size.Y - 2),
                             Position = Vector2.new(InternalHueInline.Position.X + 1, InternalHueInline.Position.Y + 1),
-                            Data = Library.Theme.Hue,
+                            DataURL = Library.Theme.Hue,
                             Transparency = 1,
                             Visible = true,
                             ZIndex = 3
@@ -1506,7 +1508,7 @@ do
                         --
                         local Cursor = Utility.AddDrawing("Image", {
                             Size = Vector2.new(6, 6),
-                            Data = Library.Theme.SaturationCursor,
+                            DataURL = Library.Theme.SaturationCursor,
                             Transparency = 1,
                             Visible = true,
                             ZIndex = 6
@@ -1894,7 +1896,7 @@ do
                         local KeybindGradient = Utility.AddDrawing("Image", {
                             Size = Vector2.new(KeybindInline.Size.X - 2, KeybindInline.Size.Y - 2),
                             Position = Vector2.new(KeybindInline.Position.X + 1, KeybindInline.Position.Y + 1),
-                            Data = Library.Theme.Gradient,
+                            DataURL = Library.Theme.Gradient,
                             Transparency = 1,
                             Visible = true
                         })
@@ -1934,7 +1936,7 @@ do
                         local KeybindHoldGradient = Utility.AddDrawing("Image", {
                             Size = Vector2.new(KeybindHoldInline.Size.X - 2, KeybindHoldInline.Size.Y - 2),
                             Position = Vector2.new(KeybindHoldInline.Position.X + 1, KeybindHoldInline.Position.Y + 1),
-                            Data = Library.Theme.Gradient,
+                            DataURL = Library.Theme.Gradient,
                             Transparency = 1,
                             Visible = true,
                             ZIndex = 3
@@ -1974,7 +1976,7 @@ do
                         local KeybindToggleGradient = Utility.AddDrawing("Image", {
                             Size = Vector2.new(KeybindToggleInline.Size.X - 2, KeybindToggleInline.Size.Y - 2),
                             Position = Vector2.new(KeybindToggleInline.Position.X + 1, KeybindToggleInline.Position.Y + 1),
-                            Data = Library.Theme.Gradient,
+                            DataURL = Library.Theme.Gradient,
                             Transparency = 1,
                             Visible = true,
                             ZIndex = 3
@@ -2015,7 +2017,7 @@ do
                         local KeybindAlwaysGradient = Utility.AddDrawing("Image", {
                             Size = Vector2.new(KeybindAlwaysInline.Size.X - 2, KeybindAlwaysInline.Size.Y - 2),
                             Position = Vector2.new(KeybindAlwaysInline.Position.X + 1, KeybindAlwaysInline.Position.Y + 1),
-                            Data = Library.Theme.Gradient,
+                            DataURL = Library.Theme.Gradient,
                             Transparency = 1,
                             Visible = true,
                             ZIndex = 3
@@ -2269,7 +2271,7 @@ do
                     local SliderGradient = Utility.AddDrawing("Image", {
                         Size = Vector2.new(SliderInline.Size.X - 2, SliderInline.Size.Y - 2),
                         Position = Vector2.new(SliderInline.Position.X + 1, SliderInline.Position.Y + 1),
-                        Data = Library.Theme.Gradient,
+                        DataURL = Library.Theme.Gradient,
                         Transparency = 0.5,
                         Visible = false
                     })
@@ -2454,7 +2456,7 @@ do
                     local ButtonGradient = Utility.AddDrawing("Image", {
                         Size = ButtonOutline.Size,
                         Position = ButtonOutline.Position,
-                        Data = Library.Theme.Gradient,
+                        DataURL = Library.Theme.Gradient,
                         Transparency = 0.5,
                         Visible = true
                     })
@@ -2598,7 +2600,7 @@ do
                     local ColorpickerGradient = Utility.AddDrawing("Image", {
                         Size = Vector2.new(ColorpickerInline.Size.X - 2, ColorpickerInline.Size.Y - 2),
                         Position = Vector2.new(ColorpickerInline.Position.X + 1, ColorpickerInline.Position.Y + 1),
-                        Data = Library.Theme.Gradient,
+                        DataURL = Library.Theme.Gradient,
                         Transparency = 0.5,
                         Visible = true
                     })
@@ -2674,7 +2676,7 @@ do
                     local InternalSaturation = Utility.AddDrawing("Image", {
                         Size = Vector2.new(196 - 2, 196 - 2),
                         Position = Vector2.new(InternalOutline.Position.X + 8 + 1, InternalOutline.Position.Y + 25 + 1),
-                        Data = Library.Theme.Saturation,
+                        DataURL = Library.Theme.Saturation,
                         Transparency = 1,
                         Visible = true,
                         ZIndex = 3
@@ -2693,7 +2695,7 @@ do
                     local InternalHue = Utility.AddDrawing("Image", {
                         Size = Vector2.new(InternalHueInline.Size.X - 2, InternalHueInline.Size.Y - 2),
                         Position = Vector2.new(InternalHueInline.Position.X + 1, InternalHueInline.Position.Y + 1),
-                        Data = Library.Theme.Hue,
+                        DataURL = Library.Theme.Hue,
                         Transparency = 1,
                         Visible = true,
                         ZIndex = 3
@@ -2723,7 +2725,7 @@ do
                     --
                     local Cursor = Utility.AddDrawing("Image", {
                         Size = Vector2.new(6, 6),
-                        Data = Library.Theme.SaturationCursor,
+                        DataURL = Library.Theme.SaturationCursor,
                         Transparency = 1,
                         Visible = true,
                         ZIndex = 6
@@ -3097,7 +3099,7 @@ do
                     local DropdownGradient = Utility.AddDrawing("Image", {
                         Size = Vector2.new(DropdownInline.Size.X - 2, DropdownInline.Size.Y - 2),
                         Position = Vector2.new(DropdownInline.Position.X + 1, DropdownInline.Position.Y + 1),
-                        Data = Library.Theme.Gradient,
+                        DataURL = Library.Theme.Gradient,
                         Transparency = 1,
                         Visible = true
                     })
@@ -3207,7 +3209,7 @@ do
                         local SelectionGradient = Utility.AddDrawing("Image", {
                             Size = Vector2.new(SelectionInline.Size.X - 2, SelectionInline.Size.Y - 2),
                             Position = Vector2.new(SelectionInline.Position.X + 1, SelectionInline.Position.Y + 1),
-                            Data = Library.Theme.Gradient,
+                            DataURL = Library.Theme.Gradient,
                             Transparency = 1,
                             Visible = true,
                             ZIndex = 3
@@ -3409,7 +3411,7 @@ do
                     local KeybindGradient = Utility.AddDrawing("Image", {
                         Size = Vector2.new(KeybindInline.Size.X - 2, KeybindInline.Size.Y - 2),
                         Position = Vector2.new(KeybindInline.Position.X + 1, KeybindInline.Position.Y + 1),
-                        Data = Library.Theme.Gradient,
+                        DataURL = Library.Theme.Gradient,
                         Transparency = 1,
                         Visible = true
                     })
@@ -3447,7 +3449,7 @@ do
                     local KeybindHoldGradient = Utility.AddDrawing("Image", {
                         Size = Vector2.new(KeybindHoldInline.Size.X - 2, KeybindHoldInline.Size.Y - 2),
                         Position = Vector2.new(KeybindHoldInline.Position.X + 1, KeybindHoldInline.Position.Y + 1),
-                        Data = Library.Theme.Gradient,
+                        DataURL = Library.Theme.Gradient,
                         Transparency = 1,
                         Visible = true
                     })
@@ -3485,7 +3487,7 @@ do
                     local KeybindToggleGradient = Utility.AddDrawing("Image", {
                         Size = Vector2.new(KeybindToggleInline.Size.X - 2, KeybindToggleInline.Size.Y - 2),
                         Position = Vector2.new(KeybindToggleInline.Position.X + 1, KeybindToggleInline.Position.Y + 1),
-                        Data = Library.Theme.Gradient,
+                        DataURL = Library.Theme.Gradient,
                         Transparency = 1,
                         Visible = true
                     })
@@ -3523,7 +3525,7 @@ do
                     local KeybindAlwaysGradient = Utility.AddDrawing("Image", {
                         Size = Vector2.new(KeybindAlwaysInline.Size.X - 2, KeybindAlwaysInline.Size.Y - 2),
                         Position = Vector2.new(KeybindAlwaysInline.Position.X + 1, KeybindAlwaysInline.Position.Y + 1),
-                        Data = Library.Theme.Gradient,
+                        DataURL = Library.Theme.Gradient,
                         Transparency = 1,
                         Visible = true
                     })
@@ -4131,7 +4133,7 @@ do
                 Transparency = 1,
                 ZIndex = 3,
                 Visible = true,
-                Data = Library.Theme.Logo
+                DataURL = Library.Theme.Logo
             }, Library.Watermark)
             --
             local WindowOutlineBorder = Utility.AddDrawing("Square", {
@@ -4174,7 +4176,7 @@ do
                 Position = WindowFrame.Position,
                 Transparency = 1, 
                 Visible = true,
-                Data = Library.Theme.Gradient
+                DataURL = Library.Theme.Gradient
             }, Library.Watermark)
             --
             local WindowTitle = Utility.AddDrawing("Text", {
