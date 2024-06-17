@@ -39,7 +39,7 @@ local Library = {
         Text = Color3.fromHex("#e8e8e8"),
         TextInactive = Color3.fromHex("#aaaaaa"),
         Font = Drawing.Fonts.Plex,
-        TextSize = 13,
+        TextSize = 15,
         UseOutline = false
     },
     Icons = {},
@@ -4123,7 +4123,7 @@ do
             --
             local WindowOutline = Utility.AddDrawing("Square", {
                 Size = Vector2.new(475, 24),
-                Position = Vector2.new(150, 8),
+                Position = Vector2.new(8, 8),
                 Thickness = 0,
                 Color = Library.Theme.Outline,
                 Visible = true,
