@@ -329,10 +329,7 @@ do
             ImageFile = game:HttpGet(Url)
             writefile(Image, ImageFile)
         end
-        --
-        -- currently no (public) Drawing.lib supports image 'Data' attribute, so we will bypass it by using 'DataURL' attribute
-        -- return ImageFile
-        return Url
+        return ImageFile
     end
 end
 --
@@ -381,7 +378,7 @@ do
             Visible = false,
             Filled = true
         })
-        --
+        --[[
         local WindowImage = Utility.AddDrawing("Image", {
             Size = WindowFrame.Size,
             Position = WindowFrame.Position,
@@ -389,7 +386,7 @@ do
             Visible = true,
             DataURL = Library.Theme.Gradient
         })
-        --
+        --]]
         local WindowTitle = Utility.AddDrawing("Text", {
             Font = Library.Theme.Font,
             Size = Library.Theme.TextSize,
@@ -486,14 +483,18 @@ do
         Library.Theme.Rem = Utility.AddImage("Boykisser/Assets/UI/Rem.png", "https://i.imgur.com/ykbRkhJ.png")
         Library.Theme.Violet = Utility.AddImage("Boykisser/Assets/UI/Violet.png", "https://i.imgur.com/7B56w4a.png")
         Library.Theme.Asuka = Utility.AddImage("Boykisser/Assets/UI/Asuka.png", "https://i.imgur.com/3hwztNM.png")
+        wait(0.5)
         --
         Window.SetText(1, "Checking Assets")
+        wait(0.5)
         --
         -- This is likely broken and I cba to fix it just yet lol
         Window.SetText(1, "Checking Input [ Skip ]")
+        wait(0.5)
         -- Utility.CLCheck(Window)
         --
         Window.SetText(2, "Finished")
+        wait(0.5)
         --
         Utility.RemoveDrawing(WindowOutline)
         Utility.RemoveDrawing(WindowOutlineBorder)
@@ -506,7 +507,7 @@ do
         Utility.RemoveDrawing(SliderFrame)
         Utility.RemoveDrawing(SliderFrameShader)
         Utility.RemoveDrawing(MiddleIcon)
-        Utility.RemoveDrawing(WindowImage)
+        -- Utility.RemoveDrawing(WindowImage)
         --
         UserInput.MouseIconEnabled = false
         --
@@ -744,7 +745,7 @@ do
             Visible = true,
             Filled = true
         })
-        --
+        --[[
         local WatermarkIcon = Utility.AddDrawing("Image", {
             Size = Vector2.new(70, 70),
             Position = Vector2.new(WindowFrame.Position.X + (WindowFrame.Size.X / 2) - 35, WindowFrame.Position.Y - 4),
@@ -753,7 +754,7 @@ do
             Visible = false,
             DataURL = Library.Theme.Logo
         })
-        --
+        --]]
         Utility.AddCursor(WindowFrame)
         --
         local WindowHeader = Utility.AddDrawing("Square", {
@@ -4084,6 +4085,7 @@ do
             
             local ClickGUI = Settings:Section("Click GUI", "Right")
             
+            --[[ Completely fucking useless rn, image loading is busted lmfao
             ClickGUI:Toggle({
                 Title = "Enable Anime",
                 Callback = function(State)
@@ -4099,6 +4101,7 @@ do
                     Window.ChangeAnime(Name)
                 end
             })
+            --]]
 
             ClickGUI:Button({
                 Title = "Self Destruct",
@@ -4126,7 +4129,7 @@ do
                 Visible = true,
                 Filled = true
             }, Library.Watermark)
-            --
+            --[[
             local WatermarkIcon = Utility.AddDrawing("Image", {
                 Size = Vector2.new(18, 20),
                 Position = Vector2.new(WindowOutline.Position.X + 2, WindowOutline.Position.Y + 2),
@@ -4135,7 +4138,7 @@ do
                 Visible = true,
                 DataURL = Library.Theme.Logo
             }, Library.Watermark)
-            --
+            --]]
             local WindowOutlineBorder = Utility.AddDrawing("Square", {
                 Size = Vector2.new(WindowOutline.Size.X - 2, WindowOutline.Size.Y - 2),
                 Position = Vector2.new(WindowOutline.Position.X + 1, WindowOutline.Position.Y + 1),
@@ -4223,10 +4226,10 @@ do
                     --
                     WindowFrame.Visible = true
                     WindowTitle.Visible = true
-                    WatermarkIcon.Visible = true
+                    -- WatermarkIcon.Visible = true
                     WindowTopline.Visible = true
                 else
-                    WatermarkIcon.Visible = false
+                    -- WatermarkIcon.Visible = false
                     WindowOutline.Visible = false
                     WindowFrame.Visible = false
                     WindowTitle.Visible = false
