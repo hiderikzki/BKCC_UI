@@ -4222,7 +4222,7 @@ do
                     WindowTopline.Size = Vector2.new(WindowOutline.Size.X - 2, 1)
                     WindowFrame.Size = Vector2.new(WindowOutline.Size.X - 2, WindowOutline.Size.Y - 2)
                     WindowImage.Size = WindowFrame.Size
-                    WindowTitle.Position = Vector2.new(WindowTopline.Position.X + 1, WindowTopline.Position.Y + 4)
+                    WindowTitle.Position = Vector2.new(WindowTopline.Position.X - 20, WindowTopline.Position.Y + 4)
                     --
                     WindowFrame.Visible = true
                     WindowTitle.Visible = true
