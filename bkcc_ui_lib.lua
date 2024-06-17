@@ -83,7 +83,7 @@ do
     end
     --
     Utility.CLCheck = function()
-        repeat task.wait() until iswindowactive()
+        repeat task.wait() until isrbxactive()
         do
             local InputHandle = Utility.AddInstance("TextBox", {
                 Position = UDim2.new(0, 0, 0, 0)
@@ -306,7 +306,7 @@ do
             end
         end
         --
-        rconsoleinfo("Debug: Loaded a config! 0 error.")
+        print("Debug: Loaded a config! 0 errors.")
     end
     --
     Utility.AddFolder = function(GetFolder)
