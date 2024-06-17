@@ -332,7 +332,7 @@ do
         --
         -- currently no (public) Drawing.lib supports image 'Data' attribute, so we will bypass it by using 'DataURL' attribute
         -- return ImageFile
-        -- return Url
+        return Url
     end
 end
 --
