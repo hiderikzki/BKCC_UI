@@ -39,7 +39,7 @@ local Library = {
         Text = Color3.fromHex("#e8e8e8"),
         TextInactive = Color3.fromHex("#aaaaaa"),
         Font = Drawing.Fonts.Plex,
-        TextSize = 15,
+        TextSize = 16,
         UseOutline = false
     },
     Icons = {},
@@ -4193,7 +4193,7 @@ do
                 Outline = false
             }, Library.Watermark)
             --
-            WindowOutline.Size = Vector2.new(WindowTitle.TextBounds.X + 19, 20)
+            WindowOutline.Size = Vector2.new(WindowTitle.TextBounds.X + 1, 20)
             WindowTopline.Size = Vector2.new(WindowOutline.Size.X - 2, 2)
             WindowFrame.Size = Vector2.new(WindowOutline.Size.X - 2, WindowOutline.Size.Y - 2)
             --
