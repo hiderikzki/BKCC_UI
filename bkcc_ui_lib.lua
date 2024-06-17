@@ -873,7 +873,7 @@ do
         end
         --
         function Window.ToggleAnime(State)
-            Anime.Visible = State
+            Anime.Visible = false
         end
         --
         function Window.SendNotification(Type, Title, Duration)
