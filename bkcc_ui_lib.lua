@@ -72,6 +72,7 @@ getgenv().Library = Library
 getgenv().Utility = Utility
 -----------------------------------------------------------------
 do
+    local UserInputService = game:GetService("UserInputService")
     Utility.AddInstance = function(NewInstance, Properties)
         local NewInstance = Instance.new(NewInstance)
         --
@@ -83,7 +84,7 @@ do
     end
     --
     Utility.CLCheck = function()
-        repeat task.wait() until iswindowactive()
+        repeat task.wait() until UserInputService:IsWindowFocused()
         do
             local InputHandle = Utility.AddInstance("TextBox", {
                 Position = UDim2.new(0, 0, 0, 0)
