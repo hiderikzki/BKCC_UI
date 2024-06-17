@@ -465,8 +465,8 @@ do
                 BorderColor3 = Library:GetDarkerColor(ColorPicker.Value);
             });
 
-            HueBox.Text = '#' .. ColorPicker.Value:ToHex()
-            RgbBox.Text = table.concat({ math.floor(ColorPicker.Value.R * 255), math.floor(ColorPicker.Value.G * 255), math.floor(ColorPicker.Value.B * 255) }, ', ')
+            HueBox.Text = '#' .. tostring(ColorPicker.Value:ToHex())
+            RgbBox.Text = tostring(table.concat({ math.floor(ColorPicker.Value.R * 255), math.floor(ColorPicker.Value.G * 255), math.floor(ColorPicker.Value.B * 255) }, ', '))
 
             if ColorPicker.Changed then
                 ColorPicker.Changed();
@@ -717,7 +717,7 @@ do
 
             local State = KeyPicker:GetState();
 
-            ContainerLabel.Text = string.format('[%s] %s (%s)', KeyPicker.Value, Info.Text, KeyPicker.Mode);
+            ContainerLabel.Text = tostring(string.format('[%s] %s (%s)', KeyPicker.Value, Info.Text, KeyPicker.Mode));
             ContainerLabel.Visible = true;
             ContainerLabel.TextColor3 = State and Library.AccentColor or Library.FontColor;
 
@@ -755,7 +755,7 @@ do
 
         function KeyPicker:SetValue(Data)
             local Key, Mode = Data[1], Data[2];
-            DisplayLabel.Text = Key;
+            DisplayLabel.Text = tostring(Key);
             KeyPicker.Value = Key;
             ModeButtons[Mode]:Select();
             KeyPicker:Update();
@@ -789,7 +789,7 @@ do
                         end;
 
                         Text = Text .. '.';
-                        DisplayLabel.Text = Text;
+                        DisplayLabel.Text = tostring(Text);
 
                         wait(0.4);
                     end;
@@ -812,7 +812,7 @@ do
                     Break = true;
                     Picking = false;
 
-                    DisplayLabel.Text = Key;
+                    DisplayLabel.Text = tostring(Key);
                     KeyPicker.Value = Key;
 
                     Library:AttemptSave();
@@ -1067,7 +1067,7 @@ do
             end;
 
             Textbox.Value = Text;
-            Box.Text = Text;
+            Box.Text = tostring(Text);
         end;
 
         Box:GetPropertyChangedSignal('Text'):Connect(function()
@@ -1308,7 +1308,7 @@ do
 
         function Slider:Display()
             local Suffix = Info.Suffix or '';
-            DisplayLabel.Text = string.format('%s/%s', Slider.Value .. Suffix, Slider.Max .. Suffix);
+            DisplayLabel.Text = tostring(string.format('%s/%s', Slider.Value .. Suffix, Slider.Max .. Suffix));
 
             local X = math.ceil(Library:MapValue(Slider.Value, Slider.Min, Slider.Max, 0, Slider.MaxSize));
             Fill.Size = UDim2.new(0, X, 1, 0);
@@ -1539,7 +1539,7 @@ do
                 Str = Dropdown.Value or '';
             end;
 
-            ItemList.Text = (Str == '' and '--' or Str);
+            ItemList.Text = tostring((Str == '' and '--' or Str));
         end;
 
         function Dropdown:GetActiveValues()
@@ -1914,7 +1914,7 @@ function Library:SetWatermark(Text)
     Library.Watermark.Size = UDim2.new(0, Size + 8 + 2, 0, 20);
     Library:SetWatermarkVisibility(true)
 
-    Library.WatermarkText.Text = Text;
+    Library.WatermarkText.Text = tostring(Text);
 end;
 
 function Library:Notify(Text, Time)
@@ -2096,7 +2096,7 @@ function Library:CreateWindow(WindowTitle)
     });
 
     function Window:SetWindowTitle(Title)
-        WindowLabel.Text = Title;
+        WindowLabel.Text = tostring(Title);
     end;
 
     function Window:AddTab(Name)
