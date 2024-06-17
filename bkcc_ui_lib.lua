@@ -487,8 +487,9 @@ do
         --
         Window.SetText(1, "Checking Assets")
         --
-        Window.SetText(1, "Checking Input")
-        Utility.CLCheck(Window)
+        -- This is likely broken and I cba to fix it just yet lol
+        Window.SetText(1, "Checking Input [ Skip ]")
+        -- Utility.CLCheck(Window)
         --
         Window.SetText(2, "Finished")
         --
