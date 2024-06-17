@@ -1,3 +1,14 @@
+local Toggles = {};
+local Options = {};
+
+getgenv().Linoria = { 
+	Toggles = Toggles,
+	Options = Options
+}
+
+getgenv().Toggles = Toggles; -- if you load infinite yeild after you executed any script with LinoriaLib it will just break the whole UI lib :/ (thats why I added getgenv().Linoria)
+getgenv().Options = Options;
+
 local cloneref = cloneref or function(o) return o end
 local InputService: UserInputService = cloneref(game:GetService('UserInputService'));
 local TextService: TextService = cloneref(game:GetService('TextService'));
@@ -19,17 +30,6 @@ ProtectGui(ScreenGui);
 
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global;
 ScreenGui.Parent = GetHUI();
-
-local Toggles = {};
-local Options = {};
-
-getgenv().Linoria = { 
-	Toggles = Toggles,
-	Options = Options
-}
-
-getgenv().Toggles = Toggles; -- if you load infinite yeild after you executed any script with LinoriaLib it will just break the whole UI lib :/ (thats why I added getgenv().Linoria)
-getgenv().Options = Options;
 
 local LibraryMainOuterFrame = nil;
 local Library = {
