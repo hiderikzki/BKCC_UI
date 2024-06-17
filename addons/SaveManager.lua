@@ -57,7 +57,7 @@ local SaveManager = {} do
 
 		Input = {
 			Save = function(idx, object)
-				return { type = 'Input', idx = idx, text = object.Value }
+				return { type = 'Input', idx = idx, text = tostring(object.Value) }
 			end,
 			Load = function(idx, data)
 				if Options[idx] and type(data.text) == 'string' then
