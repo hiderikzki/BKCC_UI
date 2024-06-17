@@ -4149,8 +4149,8 @@ do
             }, Library.Watermark)
             --
             local WindowFrame = Utility.AddDrawing("Square", {
-                Size = Vector2.new(WindowOutlineBorder.Size.X - 2, WindowOutlineBorder.Size.Y - 2),
-                Position = Vector2.new(WindowOutlineBorder.Position.X + 1, WindowOutlineBorder.Position.Y + 1),
+                Size = Vector2.new(WindowOutlineBorder.Size.X - 1, WindowOutlineBorder.Size.Y - 2),
+                Position = Vector2.new(WindowOutlineBorder.Position.X, WindowOutlineBorder.Position.Y + 1),
                 Thickness = 0,
                 Transparency = 1,
                 Color = Library.Theme.DarkContrast,
@@ -4222,7 +4222,7 @@ do
                     WindowTopline.Size = Vector2.new(WindowOutline.Size.X - 2, 1)
                     WindowFrame.Size = Vector2.new(WindowOutline.Size.X - 2, WindowOutline.Size.Y - 2)
                     WindowImage.Size = WindowFrame.Size
-                    WindowTitle.Position = Vector2.new(WindowTopline.Position.X - 20, WindowTopline.Position.Y + 4)
+                    WindowTitle.Position = Vector2.new(WindowTopline.Position.X + 1, WindowTopline.Position.Y + 4)
                     --
                     WindowFrame.Visible = true
                     WindowTitle.Visible = true
