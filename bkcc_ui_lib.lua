@@ -3128,7 +3128,7 @@ function Library:SetWatermark(Text)
 	Library.WatermarkText.Text = Text;
 end;
 
-function Library:Notify(Text, Time, SoundId)
+function Library:Notify(Text, Time, SoundId, SoundVolume)
 	local XSize, YSize = Library:GetTextBounds(Text, Library.Font, 14);
 
 	YSize = YSize + 7
@@ -3206,10 +3206,15 @@ function Library:Notify(Text, Time, SoundId)
 		BackgroundColor3 = 'AccentColor';
 	}, true);
 
+	local FinalVolume = 3
+	if SoundVolume then
+		FinalVolume = SoundVolume
+	end
+
 	if SoundId then
 		Library:Create('Sound', {
 			SoundId = "rbxassetid://" .. tostring(SoundId):gsub("rbxassetid://", "");
-			Volume = 3;
+			Volume = FinalVolume;
 			PlayOnRemove = true;
 			Parent = game:GetService("SoundService");
 		}):Destroy();
