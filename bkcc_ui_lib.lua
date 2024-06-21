@@ -20,7 +20,7 @@ ProtectGui(ScreenGui);
 local Toggles = {};
 local Options = {};
 
-getgenv().Linoria = { 
+getgenv().Linoria = {
 	Toggles = Toggles,
 	Options = Options
 }
