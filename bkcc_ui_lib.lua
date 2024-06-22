@@ -1952,8 +1952,9 @@ do
 				end
 			end
 
+			Textbox.Value = Text;
 			TextUncensored = Text;
-			Textbox.Value = TextUncensored;
+			Box.Text = Text;
 
 			if Textbox.Censored then 
 				Box.Text = string.rep("*", #TextUncensored);
