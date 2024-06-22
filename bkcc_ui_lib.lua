@@ -1958,10 +1958,8 @@ do
 			ClearTextOnFocus = (typeof(Info.ClearTextOnFocus) ~= "boolean" and true or Info.ClearTextOnFocus);
 
 			ZIndex = 7;
-			Parent = Container;
+			Parent = TextButton;
 		});
-
-		
 
 		Library:ApplyTextStroke(Box);
 		
