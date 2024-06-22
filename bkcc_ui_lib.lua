@@ -3543,6 +3543,7 @@ function Library:CreateWindow(...)
 			Parent = TabFrame;
 		});
 
+		--[[
 		local FullSize = Library:Create('ScrollingFrame', {
 			BackgroundTransparency = 1;
 			BorderSizePixel = 0;
@@ -3555,6 +3556,7 @@ function Library:CreateWindow(...)
 			ZIndex = 2;
 			Parent = TabFrame;
 		});
+		--]]
 
 		Library:Create('UIListLayout', {
 			Padding = UDim.new(0, 8);
@@ -3572,6 +3574,7 @@ function Library:CreateWindow(...)
 			Parent = RightSide;
 		});
 
+		--[[
 		Library:Create('UIListLayout', {
 			Padding = UDim.new(0, 8);
 			FillDirection = Enum.FillDirection.Vertical;
@@ -3579,6 +3582,7 @@ function Library:CreateWindow(...)
 			HorizontalAlignment = Enum.HorizontalAlignment.Center;
 			Parent = FullSize;
 		});
+		--]]
 
 		if Library.IsMobile then
 			local SidesValues = {
@@ -3611,6 +3615,7 @@ function Library:CreateWindow(...)
 				end
 			end);
 
+			--[[
 			FullSize:GetPropertyChangedSignal('CanvasPosition'):Connect(function()
 				Library.CanDrag = false;
 
@@ -3622,9 +3627,10 @@ function Library:CreateWindow(...)
 					Library.CanDrag = true;
 				end
 			end);
+			--]]
 		end;
 
-		for _, Side in next, { LeftSide, RightSide, FullSize } do
+		for _, Side in next, { LeftSide, RightSide } do
 			Side:WaitForChild('UIListLayout'):GetPropertyChangedSignal('AbsoluteContentSize'):Connect(function()
 				Side.CanvasSize = UDim2.fromOffset(0, Side.UIListLayout.AbsoluteContentSize.Y);
 			end);
@@ -3655,7 +3661,7 @@ function Library:CreateWindow(...)
 		end;
 
 		function Tab:GetSides()
-			return { ["Left"] = LeftSide, ["Right"] = RightSide, ["Full"] = FullSize };
+			return { ["Left"] = LeftSide, ["Right"] = RightSide };
 		end;
 
 		function Tab:AddGroupbox(Info)
@@ -3757,7 +3763,7 @@ function Library:CreateWindow(...)
 				BorderMode = Enum.BorderMode.Inset;
 				Size = UDim2.new(1, 0, 0, 507 + 2);
 				ZIndex = 2;
-				Parent = FullSize;
+				Parent = LeftSide;
 			});
 
 			Library:AddToRegistry(BoxOuter, {
