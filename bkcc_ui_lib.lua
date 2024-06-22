@@ -583,6 +583,28 @@ function Library:Unload()
 	ScreenGui:Destroy()
 end
 
+function Library:Reload()
+	-- Unload all of the signals
+	for Idx = #Library.Signals, 1, -1 do
+		local Connection = table.remove(Library.Signals, Idx)
+		Connection:Disconnect()
+	end
+
+	ScreenGui:Destroy()
+
+	ScreenGui = Instance.new('ScreenGui');
+	ProtectGui(ScreenGui);
+
+	ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global;
+	ScreenGui.Parent = GetHUI();
+
+	Library:GiveSignal(ScreenGui.DescendantRemoving:Connect(function(Instance)
+		if Library.RegistryMap[Instance] then
+			Library:RemoveFromRegistry(Instance);
+		end;
+	end))
+end
+
 function Library:OnUnload(Callback)
 	Library.OnUnload = Callback
 end
@@ -4088,7 +4110,7 @@ function Library:CreateWindow(...)
 					CursorOutline.PointA = Cursor.PointA
 					CursorOutline.PointB = Cursor.PointB
 					CursorOutline.PointC = Cursor.PointC
-					if not (Toggled and ScreenGui.Parent and Library.ShowCustomCursor) then
+					if ScreenGui ~= nil and not (Toggled and ScreenGui.Parent and Library.ShowCustomCursor) then
 						InputService.MouseIconEnabled = OldMouseIconState
 						Cursor:Destroy()
 						CursorOutline:Destroy()
