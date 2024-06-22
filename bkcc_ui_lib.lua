@@ -584,19 +584,13 @@ function Library:Unload()
 end
 
 function Library:Reload()
-	-- Unload all of the signals
-	for Idx = #Library.Signals, 1, -1 do
-		local Connection = table.remove(Library.Signals, Idx)
-		Connection:Disconnect()
-	end
-
-	ScreenGui:Destroy()
-
 	ScreenGui = Instance.new('ScreenGui');
 	ProtectGui(ScreenGui);
 
 	ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global;
 	ScreenGui.Parent = GetHUI();
+
+	Library.ScreenGui = ScreenGui;
 
 	Library:GiveSignal(ScreenGui.DescendantRemoving:Connect(function(Instance)
 		if Library.RegistryMap[Instance] then
