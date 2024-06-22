@@ -1949,12 +1949,12 @@ do
 
 			if Textbox.Numeric then
 				if (not tonumber(Text)) and Text:len() > 0 then
-					Text = Textbox.Value
+					Text = Textbox.Value;
 				end
 			end
 
 			Textbox.Value = Text;
-			TextUncensored = Box.Text
+			TextUncensored = Text;
 
 			if Textbox.Censored then 
 				Box.Text = string.rep("*", #Text);
