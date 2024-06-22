@@ -1842,8 +1842,6 @@ do
 	function Funcs:AddInput(Idx, Info)
 		assert(Info.Text, 'AddInput: Missing `Text` string.')
 
-		local TextUncensored = Info.Default or '';
-
 		local Textbox = {
 			Value = Info.Default or '';
 			Numeric = Info.Numeric or false;
@@ -1853,6 +1851,7 @@ do
 			Censored = Info.Censored or false;
 		};
 
+		local TextUncensored = Info.Default or '';
 		local Groupbox = self;
 		local Container = Groupbox.Container;
 
@@ -1957,9 +1956,9 @@ do
 			TextUncensored = Text;
 
 			if Textbox.Censored then 
-				Box.Text = string.rep("*", #Text);
+				Box.Text = string.rep("*", #TextUncensored);
 			else
-				Box.Text = Text;
+				Box.Text = TextUncensored;
 			end
 
 			Library:SafeCallback(Textbox.Callback, Textbox.Value);
