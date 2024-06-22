@@ -1851,7 +1851,6 @@ do
 			Censored = Info.Censored or false;
 		};
 
-		local BoxText = Info.Default or '';
 		local Groupbox = self;
 		local Container = Groupbox.Container;
 
@@ -1921,7 +1920,7 @@ do
 			BackgroundTransparency = 1;
 
 			Position = UDim2.fromOffset(0, 0),
-			Size = UDim2.fromScale(0, 0, 0, 0),
+			Size = UDim2.fromScale(5, 1),
 
 			Font = Library.Font;
 			PlaceholderColor3 = Color3.fromRGB(190, 190, 190);
@@ -1953,7 +1952,7 @@ do
 
 			if Textbox.Numeric then
 				if (not tonumber(Text)) and Text:len() > 0 then
-					Text = Textbox.Value;
+					Text = Textbox.Value
 				end
 			end
 
