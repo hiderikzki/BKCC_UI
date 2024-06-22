@@ -1916,26 +1916,6 @@ do
 			ZIndex = 7;
 			Parent = TextBoxInner;
 		})
-		
-		local TextButton = Library:Create('TextButton', {
-			BackgroundTransparency = 0;
-
-			Position = UDim2.fromOffset(0, 0),
-			Size = UDim2.fromScale(5, 1),
-
-			Font = Library.Font;
-
-			Text = Info.Default or '';
-			TextColor3 = Library.FontColor;
-			TextSize = 14;
-			TextStrokeTransparency = 0;
-			TextXAlignment = Enum.TextXAlignment.Left;
-
-			ClipsDescendants = true;
-
-			ZIndex = 8;
-			Parent = Container;
-		});
 
 		local Box = Library:Create('TextBox', {
 			BackgroundTransparency = 1;
@@ -1959,6 +1939,11 @@ do
 			Parent = Container;
 		});
 
+		if Textbox.Censored then
+			Box.MaxVisibleGraphemes = 1
+			Box.TextTruncate = Enum.TextTruncate.AtEnd
+		end
+
 		Library:ApplyTextStroke(Box);
 		
 		-- https://devforum.roblox.com/t/making-a-textbox-password-box/241525/6
@@ -1975,12 +1960,6 @@ do
 
 			Textbox.Value = Text;
 			Box.Text = Text;
-
-			if Textbox.Censored then 
-				TextButton.Text = string.rep("*", #Box.Text);
-			else
-				TextButton.Text = TeBox.Box.Text;
-			end
 
 			Library:SafeCallback(Textbox.Callback, Textbox.Value);
 			Library:SafeCallback(Textbox.Changed, Textbox.Value);
