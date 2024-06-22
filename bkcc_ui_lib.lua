@@ -1842,6 +1842,8 @@ do
 	function Funcs:AddInput(Idx, Info)
 		assert(Info.Text, 'AddInput: Missing `Text` string.')
 
+		local TextUncensored = Info.Default or '';
+
 		local Textbox = {
 			Value = Info.Default or '';
 			Numeric = Info.Numeric or false;
@@ -1927,7 +1929,6 @@ do
 			PlaceholderText = Info.Placeholder or '';
 
 			Text = Info.Default or '';
-			TextUncensored = Info.Default or '';
 			TextColor3 = Library.FontColor;
 			TextSize = 14;
 			TextStrokeTransparency = 0;
@@ -1953,7 +1954,7 @@ do
 			end
 
 			Textbox.Value = Text;
-			Box.TextUncensored = Box.Text
+			TextUncensored = Box.Text
 
 			if Textbox.Censored then 
 				Box.Text = string.rep("*", #Text);
@@ -1969,12 +1970,12 @@ do
 			Box.FocusLost:Connect(function(enter)
 				if not enter then return end
 
-				Textbox:SetValue(Box.TextUncensored);
+				Textbox:SetValue(TextUncensored);
 				Library:AttemptSave();
 			end)
 		else
 			Box:GetPropertyChangedSignal('Text'):Connect(function()
-				Textbox:SetValue(Box.TextUncensored);
+				Textbox:SetValue(TextUncensored);
 				Library:AttemptSave();
 			end);
 		end
