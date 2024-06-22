@@ -1927,6 +1927,7 @@ do
 			PlaceholderText = Info.Placeholder or '';
 
 			Text = Info.Default or '';
+			TextUncensored = Info.Default or '';
 			TextColor3 = Library.FontColor;
 			TextSize = 14;
 			TextStrokeTransparency = 0;
@@ -1952,6 +1953,7 @@ do
 			end
 
 			Textbox.Value = Text;
+			Box.TextUncensored = Box.Text
 
 			if Textbox.Censored then 
 				Box.Text = string.rep("*", #Text);
@@ -1967,12 +1969,12 @@ do
 			Box.FocusLost:Connect(function(enter)
 				if not enter then return end
 
-				Textbox:SetValue(Box.Text);
+				Textbox:SetValue(Box.TextUncensored);
 				Library:AttemptSave();
 			end)
 		else
 			Box:GetPropertyChangedSignal('Text'):Connect(function()
-				Textbox:SetValue(Box.Text);
+				Textbox:SetValue(Box.TextUncensored);
 				Library:AttemptSave();
 			end);
 		end
