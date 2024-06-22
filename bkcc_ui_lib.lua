@@ -3572,6 +3572,14 @@ function Library:CreateWindow(...)
 			Parent = RightSide;
 		});
 
+		Library:Create('UIListLayout', {
+			Padding = UDim.new(0, 8);
+			FillDirection = Enum.FillDirection.Vertical;
+			SortOrder = Enum.SortOrder.LayoutOrder;
+			HorizontalAlignment = Enum.HorizontalAlignment.Center;
+			Parent = FullSize;
+		});
+
 		if Library.IsMobile then
 			local SidesValues = {
 				["Left"] = tick(),
@@ -3616,7 +3624,7 @@ function Library:CreateWindow(...)
 			end);
 		end;
 
-		for _, Side in next, { LeftSide, RightSide, FullSize } do
+		for _, Side in next, { LeftSide, RightSide } do
 			Side:WaitForChild('UIListLayout'):GetPropertyChangedSignal('AbsoluteContentSize'):Connect(function()
 				Side.CanvasSize = UDim2.fromOffset(0, Side.UIListLayout.AbsoluteContentSize.Y);
 			end);
