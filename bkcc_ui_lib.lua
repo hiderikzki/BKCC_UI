@@ -3505,6 +3505,19 @@ function Library:CreateWindow(...)
 			Parent = TabFrame;
 		});
 
+		local FullSize = Library:Create('ScrollingFrame', {
+			BackgroundTransparency = 1;
+			BorderSizePixel = 0;
+			Position = UDim2.new(0, 8 - 1, 0, 8 - 1);
+			Size = UDim2.new(1, -12 + 2, 1, -14);
+			CanvasSize = UDim2.new(0, 0, 0, 0);
+			BottomImage = '';
+			TopImage = '';
+			ScrollBarThickness = 0;
+			ZIndex = 2;
+			Parent = TabFrame;
+		});
+
 		Library:Create('UIListLayout', {
 			Padding = UDim.new(0, 8);
 			FillDirection = Enum.FillDirection.Vertical;
@@ -3521,10 +3534,19 @@ function Library:CreateWindow(...)
 			Parent = RightSide;
 		});
 
+		Library:Create('UIListLayout', {
+			Padding = UDim.new(0, 8);
+			FillDirection = Enum.FillDirection.Vertical;
+			SortOrder = Enum.SortOrder.LayoutOrder;
+			HorizontalAlignment = Enum.HorizontalAlignment.Center;
+			Parent = FullSize;
+		});
+
 		if Library.IsMobile then
 			local SidesValues = {
 				["Left"] = tick(),
 				["Right"] = tick(),
+				["Full"] = tick()
 			}
 
 			LeftSide:GetPropertyChangedSignal('CanvasPosition'):Connect(function()
@@ -3550,9 +3572,21 @@ function Library:CreateWindow(...)
 					Library.CanDrag = true;
 				end
 			end);
+
+			FullSize:GetPropertyChangedSignal('CanvasPosition'):Connect(function()
+				Library.CanDrag = false;
+
+				local ChangeTick = tick();
+				SidesValues.Full = ChangeTick;
+				task.wait(0.15);
+				
+				if SidesValues.Full == ChangeTick then
+					Library.CanDrag = true;
+				end
+			end);
 		end;
 
-		for _, Side in next, { LeftSide, RightSide } do
+		for _, Side in next, { LeftSide, RightSide, FullSize } do
 			Side:WaitForChild('UIListLayout'):GetPropertyChangedSignal('AbsoluteContentSize'):Connect(function()
 				Side.CanvasSize = UDim2.fromOffset(0, Side.UIListLayout.AbsoluteContentSize.Y);
 			end);
@@ -3583,7 +3617,7 @@ function Library:CreateWindow(...)
 		end;
 
 		function Tab:GetSides()
-			return { ["Left"] = LeftSide, ["Right"] = RightSide };
+			return { ["Left"] = LeftSide, ["Right"] = RightSide, ["Full"] = FullSize };
 		end;
 
 		function Tab:AddGroupbox(Info)
@@ -3683,9 +3717,9 @@ function Library:CreateWindow(...)
 				BackgroundColor3 = Library.BackgroundColor;
 				BorderColor3 = Library.OutlineColor;
 				BorderMode = Enum.BorderMode.Inset;
-				Size = UDim2.new(1, 0, 0, (507 + 2) * 2);
+				Size = UDim2.new(1, 0, 0, 507 + 2);
 				ZIndex = 2;
-				Parent = LeftSide;
+				Parent = FullSize;
 			});
 
 			Library:AddToRegistry(BoxOuter, {
