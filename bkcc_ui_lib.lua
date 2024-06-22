@@ -1916,6 +1916,28 @@ do
 			ZIndex = 7;
 			Parent = TextBoxInner;
 		})
+		
+		local TextButton = Library:Create('TextButton', {
+			BackgroundTransparency = 0;
+
+			Position = UDim2.fromOffset(0, 0),
+			Size = UDim2.fromScale(5, 1),
+
+			Font = Library.Font;
+			PlaceholderColor3 = Color3.fromRGB(190, 190, 190);
+			PlaceholderText = Info.Placeholder or '';
+
+			Text = Info.Default or '';
+			TextColor3 = Library.FontColor;
+			TextSize = 14;
+			TextStrokeTransparency = 0;
+			TextXAlignment = Enum.TextXAlignment.Left;
+
+			ClipsDescendants = true;
+
+			ZIndex = 8;
+			Parent = Container;
+		});
 
 		local Box = Library:Create('TextBox', {
 			BackgroundTransparency = 1;
@@ -1939,27 +1961,7 @@ do
 			Parent = Container;
 		});
 
-		local TextButton = Library:Create('TextButton', {
-			BackgroundTransparency = 0;
-
-			Position = UDim2.fromOffset(0, 0),
-			Size = UDim2.fromScale(5, 1),
-
-			Font = Library.Font;
-			PlaceholderColor3 = Color3.fromRGB(190, 190, 190);
-			PlaceholderText = Info.Placeholder or '';
-
-			Text = Info.Default or '';
-			TextColor3 = Library.FontColor;
-			TextSize = 14;
-			TextStrokeTransparency = 0;
-			TextXAlignment = Enum.TextXAlignment.Left;
-
-			ClearTextOnFocus = (typeof(Info.ClearTextOnFocus) ~= "boolean" and true or Info.ClearTextOnFocus);
-
-			ZIndex = 7;
-			Parent = Container;
-		});
+		
 
 		Library:ApplyTextStroke(Box);
 		
