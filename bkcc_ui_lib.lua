@@ -584,6 +584,8 @@ function Library:Unload()
 end
 
 function Library:Reload()
+	ScreenGui:Destroy()
+
 	ScreenGui = Instance.new('ScreenGui');
 	ProtectGui(ScreenGui);
 
