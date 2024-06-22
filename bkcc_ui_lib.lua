@@ -1946,7 +1946,6 @@ do
 
 		Library:ApplyTextStroke(Box);
 		
-		-- https://devforum.roblox.com/t/making-a-textbox-password-box/241525/6
 		function Textbox:SetValue(Text)
 			if Info.MaxLength and #Text > Info.MaxLength then
 				Text = Text:sub(1, Info.MaxLength);
