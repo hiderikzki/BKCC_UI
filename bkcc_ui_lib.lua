@@ -1924,8 +1924,6 @@ do
 			Size = UDim2.fromScale(5, 1),
 
 			Font = Library.Font;
-			PlaceholderColor3 = Color3.fromRGB(190, 190, 190);
-			PlaceholderText = Info.Placeholder or '';
 
 			Text = Info.Default or '';
 			TextColor3 = Library.FontColor;
@@ -1958,7 +1956,7 @@ do
 			ClearTextOnFocus = (typeof(Info.ClearTextOnFocus) ~= "boolean" and true or Info.ClearTextOnFocus);
 
 			ZIndex = 7;
-			Parent = TextButton;
+			Parent = Container;
 		});
 
 		Library:ApplyTextStroke(Box);
