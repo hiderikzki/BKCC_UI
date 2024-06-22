@@ -1851,7 +1851,7 @@ do
 			Censored = Info.Censored or false;
 		};
 
-		local TextUncensored = Info.Default or '';
+		local BoxText = Info.Default or '';
 		local Groupbox = self;
 		local Container = Groupbox.Container;
 
@@ -1921,6 +1921,28 @@ do
 			BackgroundTransparency = 1;
 
 			Position = UDim2.fromOffset(0, 0),
+			Size = UDim2.fromScale(0, 0, 0, 0),
+
+			Font = Library.Font;
+			PlaceholderColor3 = Color3.fromRGB(190, 190, 190);
+			PlaceholderText = Info.Placeholder or '';
+
+			Text = Info.Default or '';
+			TextColor3 = Library.FontColor;
+			TextSize = 14;
+			TextStrokeTransparency = 0;
+			TextXAlignment = Enum.TextXAlignment.Left;
+
+			ClearTextOnFocus = (typeof(Info.ClearTextOnFocus) ~= "boolean" and true or Info.ClearTextOnFocus);
+
+			ZIndex = 7;
+			Parent = Container;
+		});
+
+		local TextButton = Library:Create('TextButton', {
+			BackgroundTransparency = 0;
+
+			Position = UDim2.fromOffset(0, 0),
 			Size = UDim2.fromScale(5, 1),
 
 			Font = Library.Font;
@@ -1940,7 +1962,8 @@ do
 		});
 
 		Library:ApplyTextStroke(Box);
-
+		
+		-- https://devforum.roblox.com/t/making-a-textbox-password-box/241525/6
 		function Textbox:SetValue(Text)
 			if Info.MaxLength and #Text > Info.MaxLength then
 				Text = Text:sub(1, Info.MaxLength);
@@ -1953,13 +1976,12 @@ do
 			end
 
 			Textbox.Value = Text;
-			TextUncensored = Text;
 			Box.Text = Text;
 
 			if Textbox.Censored then 
-				Box.Text = string.rep("*", #Text);
+				TextButton.Text = string.rep("*", #Box.Text);
 			else
-				Box.Text = Text;
+				TextButton.Text = TeBox.Box.Text;
 			end
 
 			Library:SafeCallback(Textbox.Callback, Textbox.Value);
@@ -1970,12 +1992,12 @@ do
 			Box.FocusLost:Connect(function(enter)
 				if not enter then return end
 
-				Textbox:SetValue(TextUncensored);
+				Textbox:SetValue(Box.Text);
 				Library:AttemptSave();
 			end)
 		else
 			Box:GetPropertyChangedSignal('Text'):Connect(function()
-				Textbox:SetValue(TextUncensored);
+				Textbox:SetValue(Box.Text);
 				Library:AttemptSave();
 			end);
 		end
