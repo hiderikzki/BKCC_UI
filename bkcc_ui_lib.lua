@@ -1938,8 +1938,18 @@ do
 			Parent = Container;
 		});
 
+		local CensoredLabel = Library:CreateLabel({
+			Size = UDim2.fromScale(5, 1);
+			Position = UDim2.fromOffset(0, 0);
+			TextSize = 14;
+			Text = "";
+			TextXAlignment = Enum.TextXAlignment.Left;
+			ZIndex = 8;
+			Parent = Box;
+		});
+
 		if Textbox.Censored then
-			Box.MaxVisibleGraphemes = 1
+			Box.MaxVisibleGraphemes = 0
 			Box.TextTruncate = Enum.TextTruncate.AtEnd
 		end
 
@@ -1958,6 +1968,10 @@ do
 
 			Textbox.Value = Text;
 			Box.Text = Text;
+
+			if Textbox.Censored then
+				CensoredLabel.Text = string.rep("*", #Text)
+			end
 
 			Library:SafeCallback(Textbox.Callback, Textbox.Value);
 			Library:SafeCallback(Textbox.Changed, Textbox.Value);
