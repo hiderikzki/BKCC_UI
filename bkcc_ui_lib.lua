@@ -594,6 +594,8 @@ function Library:Reload()
 
 	Library.ScreenGui = ScreenGui;
 
+	Library:CreateUIElements()
+
 	Library:GiveSignal(ScreenGui.DescendantRemoving:Connect(function(Instance)
 		if Library.RegistryMap[Instance] then
 			Library:RemoveFromRegistry(Instance);
@@ -3004,8 +3006,7 @@ do
 	end;
 end;
 
--- < Create other UI elements >
-do
+function Library:CreateUIElements()
 	Library.NotificationArea = Library:Create('Frame', {
 		BackgroundTransparency = 1;
 		Position = UDim2.new(0, 0, 0, 40);
@@ -3152,6 +3153,11 @@ do
 	Library.KeybindFrame = KeybindOuter;
 	Library.KeybindContainer = KeybindContainer;
 	Library:MakeDraggable(KeybindOuter);
+end
+
+-- < Create other UI elements >
+do
+	Library:CreateUIElements()
 end;
 
 function Library:SetWatermarkVisibility(Bool)
