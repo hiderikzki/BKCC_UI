@@ -1952,8 +1952,8 @@ do
 				end
 			end
 
-			Textbox.Value = Text;
 			TextUncensored = Text;
+			Textbox.Value = TextUncensored;
 
 			if Textbox.Censored then 
 				Box.Text = string.rep("*", #TextUncensored);
@@ -1961,8 +1961,8 @@ do
 				Box.Text = TextUncensored;
 			end
 
-			Library:SafeCallback(Textbox.Callback, TextUncensored);
-			Library:SafeCallback(Textbox.Changed, TextUncensored);
+			Library:SafeCallback(Textbox.Callback, Textbox.Value);
+			Library:SafeCallback(Textbox.Changed, Textbox.Value);
 		end;
 
 		if Textbox.Finished then
