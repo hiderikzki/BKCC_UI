@@ -1961,8 +1961,8 @@ do
 				Box.Text = TextUncensored;
 			end
 
-			Library:SafeCallback(Textbox.Callback, Textbox.Value);
-			Library:SafeCallback(Textbox.Changed, Textbox.Value);
+			Library:SafeCallback(Textbox.Callback, TextUncensored);
+			Library:SafeCallback(Textbox.Changed, TextUncensored);
 		end;
 
 		if Textbox.Finished then
