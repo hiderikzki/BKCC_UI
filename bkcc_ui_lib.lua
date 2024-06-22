@@ -1848,6 +1848,7 @@ do
 			Finished = Info.Finished or false;
 			Type = 'Input';
 			Callback = Info.Callback or function(Value) end;
+			Censored = Info.Censored or false;
 		};
 
 		local Groupbox = self;
@@ -1951,7 +1952,12 @@ do
 			end
 
 			Textbox.Value = Text;
-			Box.Text = Text;
+
+			if Textbox.Censored then 
+				Box.Text = string.rep("*", #Text);
+			else
+				Box.Text = Text;
+			end
 
 			Library:SafeCallback(Textbox.Callback, Textbox.Value);
 			Library:SafeCallback(Textbox.Changed, Textbox.Value);
