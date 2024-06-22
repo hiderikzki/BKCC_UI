@@ -1957,9 +1957,9 @@ do
 			Box.Text = Text;
 
 			if Textbox.Censored then 
-				Box.Text = string.rep("*", #TextUncensored);
+				Box.Text = string.rep("*", #Text);
 			else
-				Box.Text = TextUncensored;
+				Box.Text = Text;
 			end
 
 			Library:SafeCallback(Textbox.Callback, Textbox.Value);
