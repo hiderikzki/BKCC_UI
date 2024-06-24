@@ -25,14 +25,14 @@ getgenv().Linoria = {
 	Options = Options
 }
 
-getgenv().Toggles = Toggles; -- if you load infinite yeild after you executed any script with LinoriaLib it will just break the whole UI lib :/ (thats why I added getgenv().Linoria)
+getgenv().Toggles = Toggles; -- if you load infinite yield after you executed any script with LinoriaLib it will just break the whole UI lib :/ (thats why I added getgenv().Linoria)
 getgenv().Options = Options;
 
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global;
 ScreenGui.Parent = GetHUI();
 
-local LibraryMainOuterFrame = nil;
-local Library = {
+local LinoriaLibMainOuterFrame = nil;
+local LinoriaLib = {
 	Registry = {};
 	RegistryMap = {};
 
@@ -67,17 +67,17 @@ local Library = {
 	TotalTabs = 0;
 };
 
-pcall(function() Library.DevicePlatform = InputService:GetPlatform(); end); -- For safety so the UI library doesn't error.
-Library.IsMobile = (Library.DevicePlatform == Enum.Platform.Android or Library.DevicePlatform == Enum.Platform.IOS);
+pcall(function() LinoriaLib.DevicePlatform = InputService:GetPlatform(); end); -- For safety so the UI LinoriaLib doesn't error.
+LinoriaLib.IsMobile = (LinoriaLib.DevicePlatform == Enum.Platform.Android or LinoriaLib.DevicePlatform == Enum.Platform.IOS);
 
-if Library.IsMobile then
-	Library.MinSize = Vector2.new(550, 200); -- Make UI little bit smaller.
+if LinoriaLib.IsMobile then
+	LinoriaLib.MinSize = Vector2.new(550, 200); -- Make UI little bit smaller.
 end
 
 local RainbowStep = 0
 local Hue = 0
 
-table.insert(Library.Signals, RenderStepped:Connect(function(Delta)
+table.insert(LinoriaLib.Signals, RenderStepped:Connect(function(Delta)
 	RainbowStep = RainbowStep + Delta
 
 	if RainbowStep >= (1 / 60) then
@@ -89,8 +89,8 @@ table.insert(Library.Signals, RenderStepped:Connect(function(Delta)
 			Hue = 0;
 		end;
 
-		Library.CurrentRainbowHue = Hue;
-		Library.CurrentRainbowColor = Color3.fromHSV(Hue, 0.8, 1);
+		LinoriaLib.CurrentRainbowHue = Hue;
+		LinoriaLib.CurrentRainbowColor = Color3.fromHSV(Hue, 0.8, 1);
 	end;
 end));
 
@@ -118,12 +118,12 @@ local function GetTeamsString()
 	return TeamList;
 end;
 
-function Library:SafeCallback(f, ...)
+function LinoriaLib:SafeCallback(f, ...)
 	if (not f) then
 		return;
 	end;
 
-	if not Library.NotifyOnError then
+	if not LinoriaLib.NotifyOnError then
 		return f(...);
 	end;
 
@@ -133,20 +133,20 @@ function Library:SafeCallback(f, ...)
 		local _, i = event:find(":%d+: ");
 
 		if not i then
-			return Library:Notify(event);
+			return LinoriaLib:Notify(event);
 		end;
 
-		return Library:Notify(event:sub(i + 1), 3);
+		return LinoriaLib:Notify(event:sub(i + 1), 3);
 	end;
 end;
 
-function Library:AttemptSave()
-	if Library.SaveManager then
-		Library.SaveManager:Save();
+function LinoriaLib:AttemptSave()
+	if LinoriaLib.SaveManager then
+		LinoriaLib.SaveManager:Save();
 	end;
 end;
 
-function Library:Create(Class, Properties)
+function LinoriaLib:Create(Class, Properties)
 	local _Instance = Class;
 
 	if type(Class) == 'string' then
@@ -160,10 +160,10 @@ function Library:Create(Class, Properties)
 	return _Instance;
 end;
 
-function Library:ApplyTextStroke(Inst)
+function LinoriaLib:ApplyTextStroke(Inst)
 	Inst.TextStrokeTransparency = 1;
 
-	Library:Create('UIStroke', {
+	LinoriaLib:Create('UIStroke', {
 		Color = Color3.new(0, 0, 0);
 		Thickness = 1;
 		LineJoinMode = Enum.LineJoinMode.Miter;
@@ -171,25 +171,25 @@ function Library:ApplyTextStroke(Inst)
 	});
 end;
 
-function Library:CreateLabel(Properties, IsHud)
-	local _Instance = Library:Create('TextLabel', {
+function LinoriaLib:CreateLabel(Properties, IsHud)
+	local _Instance = LinoriaLib:Create('TextLabel', {
 		BackgroundTransparency = 1;
-		Font = Library.Font;
-		TextColor3 = Library.FontColor;
+		Font = LinoriaLib.Font;
+		TextColor3 = LinoriaLib.FontColor;
 		TextSize = 16;
 		TextStrokeTransparency = 0;
 	});
 
-	Library:ApplyTextStroke(_Instance);
+	LinoriaLib:ApplyTextStroke(_Instance);
 
-	Library:AddToRegistry(_Instance, {
+	LinoriaLib:AddToRegistry(_Instance, {
 		TextColor3 = 'FontColor';
 	}, IsHud);
 
-	return Library:Create(_Instance, Properties);
+	return LinoriaLib:Create(_Instance, Properties);
 end;
 
-function Library:MakeDraggable(Instance, Cutoff)
+function LinoriaLib:MakeDraggable(Instance, Cutoff)
 	Instance.Active = true;
 
 	Instance.InputBegan:Connect(function(Input)
@@ -216,15 +216,15 @@ function Library:MakeDraggable(Instance, Cutoff)
 		end;
 	end);
 
-	if Library.IsMobile then
+	if LinoriaLib.IsMobile then
 		local Dragging, DraggingInput, DraggingStart, StartPosition;
 
 		InputService.TouchStarted:Connect(function(Input)
-			if Library.CantDragForced == true then
+			if LinoriaLib.CantDragForced == true then
 				Dragging = false
 				return;
 			end
-			if not Dragging and Library:MouseIsOverFrame(Instance, Input) and Library.Window.Holder.Visible == true then
+			if not Dragging and LinoriaLib:MouseIsOverFrame(Instance, Input) and LinoriaLib.Window.Holder.Visible == true then
 				DraggingInput = Input;
 				DraggingStart = Input.Position;
 				StartPosition = Instance.Position;
@@ -239,11 +239,11 @@ function Library:MakeDraggable(Instance, Cutoff)
 			end;
 		end);
 		InputService.TouchMoved:Connect(function(Input)
-			if Library.CantDragForced == true then
+			if LinoriaLib.CantDragForced == true then
 				Dragging = false;
 				return;
 			end
-			if Input == DraggingInput and Dragging and Library.CanDrag == true and Library.Window.Holder.Visible == true then
+			if Input == DraggingInput and Dragging and LinoriaLib.CanDrag == true and LinoriaLib.Window.Holder.Visible == true then
 				local OffsetPos = Input.Position - DraggingStart;
 
 				Instance.Position = UDim2.new(
@@ -262,8 +262,8 @@ function Library:MakeDraggable(Instance, Cutoff)
 	end;
 end;
 
-function Library:MakeResizable(Instance, MinSize)
-	if Library.IsMobile then
+function LinoriaLib:MakeResizable(Instance, MinSize)
+	if LinoriaLib.IsMobile then
 		return;
 	end;
 
@@ -272,7 +272,7 @@ function Library:MakeResizable(Instance, MinSize)
 	local ResizerImage_Size = 25;
 	local ResizerImage_HoverTransparency = 0.5;
 
-	local Resizer = Library:Create('Frame', {
+	local Resizer = LinoriaLib:Create('Frame', {
 		SizeConstraint = Enum.SizeConstraint.RelativeXX;
 		BackgroundColor3 = Color3.new(0, 0, 0);
 		BackgroundTransparency = 1;
@@ -282,11 +282,11 @@ function Library:MakeResizable(Instance, MinSize)
 		Visible = true;
 		ClipsDescendants = true;
 		ZIndex = 1;
-		Parent = Instance;--Library.ScreenGui;
+		Parent = Instance;--LinoriaLib.ScreenGui;
 	});
 
-	local ResizerImage = Library:Create('ImageButton', {
-		BackgroundColor3 = Library.AccentColor;
+	local ResizerImage = LinoriaLib:Create('ImageButton', {
+		BackgroundColor3 = LinoriaLib.AccentColor;
 		BackgroundTransparency = 1;
 		BorderSizePixel = 0;
 		Size = UDim2.new(2, 0, 2, 0);
@@ -295,16 +295,16 @@ function Library:MakeResizable(Instance, MinSize)
 		Parent = Resizer;
 	});
 
-	local ResizerImageUICorner = Library:Create('UICorner', {
+	local ResizerImageUICorner = LinoriaLib:Create('UICorner', {
 		CornerRadius = UDim.new(0.5, 0);
 		Parent = ResizerImage;
 	});
 
-	Library:AddToRegistry(ResizerImage, { BackgroundColor3 = 'AccentColor'; });
+	LinoriaLib:AddToRegistry(ResizerImage, { BackgroundColor3 = 'AccentColor'; });
 
 	Resizer.Size = UDim2.fromOffset(ResizerImage_Size, ResizerImage_Size);
 	Resizer.Position = UDim2.new(1, -ResizerImage_Size, 1, -ResizerImage_Size);
-	MinSize = MinSize or Library.MinSize;
+	MinSize = MinSize or LinoriaLib.MinSize;
 
 	local OffsetPos;
 	Resizer.Parent = Instance;
@@ -323,10 +323,10 @@ function Library:MakeResizable(Instance, MinSize)
 			OffsetPos = Vector2.new(Mouse.X - (Instance.AbsolutePosition.X + Instance.AbsoluteSize.X), Mouse.Y - (Instance.AbsolutePosition.Y + Instance.AbsoluteSize.Y));
 
 			ResizerImage.BackgroundTransparency = 1
-			ResizerImage.Size = UDim2.fromOffset(Library.ScreenGui.AbsoluteSize.X, Library.ScreenGui.AbsoluteSize.Y);
+			ResizerImage.Size = UDim2.fromOffset(LinoriaLib.ScreenGui.AbsoluteSize.X, LinoriaLib.ScreenGui.AbsoluteSize.Y);
 			ResizerImage.Position = UDim2.new();
 			ResizerImageUICorner.Parent = nil;
-			ResizerImage.Parent = Library.ScreenGui;
+			ResizerImage.Parent = LinoriaLib.ScreenGui;
 		end;
 	end);
 
@@ -351,44 +351,44 @@ function Library:MakeResizable(Instance, MinSize)
 	end);
 end;
 
-function Library:AddToolTip(InfoStr, HoverInstance)
-	local X, Y = Library:GetTextBounds(InfoStr, Library.Font, 14);
-	local Tooltip = Library:Create('Frame', {
-		BackgroundColor3 = Library.MainColor,
-		BorderColor3 = Library.OutlineColor,
+function LinoriaLib:AddToolTip(InfoStr, HoverInstance)
+	local X, Y = LinoriaLib:GetTextBounds(InfoStr, LinoriaLib.Font, 14);
+	local Tooltip = LinoriaLib:Create('Frame', {
+		BackgroundColor3 = LinoriaLib.MainColor,
+		BorderColor3 = LinoriaLib.OutlineColor,
 
 		Size = UDim2.fromOffset(X + 5, Y + 4),
 		ZIndex = 100,
-		Parent = Library.ScreenGui,
+		Parent = LinoriaLib.ScreenGui,
 
 		Visible = false,
 	});
 
-	local Label = Library:CreateLabel({
+	local Label = LinoriaLib:CreateLabel({
 		Position = UDim2.fromOffset(3, 1),
 		Size = UDim2.fromOffset(X, Y);
 		TextSize = 14;
 		Text = InfoStr,
-		TextColor3 = Library.FontColor,
+		TextColor3 = LinoriaLib.FontColor,
 		TextXAlignment = Enum.TextXAlignment.Left;
 		ZIndex = Tooltip.ZIndex + 1,
 
 		Parent = Tooltip;
 	});
 
-	Library:AddToRegistry(Tooltip, {
+	LinoriaLib:AddToRegistry(Tooltip, {
 		BackgroundColor3 = 'MainColor';
 		BorderColor3 = 'OutlineColor';
 	});
 
-	Library:AddToRegistry(Label, {
+	LinoriaLib:AddToRegistry(Label, {
 		TextColor3 = 'FontColor',
 	});
 
 	local IsHovering = false
 
 	HoverInstance.MouseEnter:Connect(function()
-		if Library:MouseIsOverOpenedFrame() then
+		if LinoriaLib:MouseIsOverOpenedFrame() then
 			return
 		end
 
@@ -408,9 +408,9 @@ function Library:AddToolTip(InfoStr, HoverInstance)
 		Tooltip.Visible = false
 	end)
 	
-	if LibraryMainOuterFrame then
-		LibraryMainOuterFrame:GetPropertyChangedSignal("Visible"):Connect(function() 
-			if LibraryMainOuterFrame.Visible == false then
+	if LinoriaLibMainOuterFrame then
+		LinoriaLibMainOuterFrame:GetPropertyChangedSignal("Visible"):Connect(function() 
+			if LinoriaLibMainOuterFrame.Visible == false then
 				IsHovering = false
 				Tooltip.Visible = false
 			end
@@ -418,12 +418,12 @@ function Library:AddToolTip(InfoStr, HoverInstance)
 	end
 end
 
-function Library:OnHighlight(HighlightInstance, Instance, Properties, PropertiesDefault, condition)
+function LinoriaLib:OnHighlight(HighlightInstance, Instance, Properties, PropertiesDefault, condition)
 	local function undoHighlight()
-		local Reg = Library.RegistryMap[Instance];
+		local Reg = LinoriaLib.RegistryMap[Instance];
 
 		for Property, ColorIdx in next, PropertiesDefault do
-			Instance[Property] = Library[ColorIdx] or ColorIdx;
+			Instance[Property] = LinoriaLib[ColorIdx] or ColorIdx;
 
 			if Reg and Reg.Properties[Property] then
 				Reg.Properties[Property] = ColorIdx;
@@ -432,10 +432,10 @@ function Library:OnHighlight(HighlightInstance, Instance, Properties, Properties
 	end
 	local function doHighlight()
 		if condition and not condition() then undoHighlight() return end
-		local Reg = Library.RegistryMap[Instance];
+		local Reg = LinoriaLib.RegistryMap[Instance];
 
 		for Property, ColorIdx in next, Properties do
-			Instance[Property] = Library[ColorIdx] or ColorIdx;
+			Instance[Property] = LinoriaLib[ColorIdx] or ColorIdx;
 
 			if Reg and Reg.Properties[Property] then
 				Reg.Properties[Property] = ColorIdx;
@@ -454,12 +454,12 @@ function Library:OnHighlight(HighlightInstance, Instance, Properties, Properties
 	end)
 end;
 
-function Library:MouseIsOverOpenedFrame(Input)
+function LinoriaLib:MouseIsOverOpenedFrame(Input)
 	local Pos = Mouse;
-	if Library.IsMobile and Input then 
+	if LinoriaLib.IsMobile and Input then 
 		Pos = Input.Position;
 	end;
-	for Frame, _ in next, Library.OpenedFrames do
+	for Frame, _ in next, LinoriaLib.OpenedFrames do
 		local AbsPos, AbsSize = Frame.AbsolutePosition, Frame.AbsoluteSize;
 
 		if Pos.X >= AbsPos.X and Pos.X <= AbsPos.X + AbsSize.X
@@ -470,9 +470,9 @@ function Library:MouseIsOverOpenedFrame(Input)
 	end;
 end;
 
-function Library:MouseIsOverFrame(Frame, Input)
+function LinoriaLib:MouseIsOverFrame(Frame, Input)
 	local Pos = Mouse;
-	if Library.IsMobile and Input then 
+	if LinoriaLib.IsMobile and Input then 
 		Pos = Input.Position;
 	end;
 	local AbsPos, AbsSize = Frame.AbsolutePosition, Frame.AbsoluteSize;
@@ -484,64 +484,64 @@ function Library:MouseIsOverFrame(Frame, Input)
 	end;
 end;
 
-function Library:UpdateDependencyBoxes()
-	for _, Depbox in next, Library.DependencyBoxes do
+function LinoriaLib:UpdateDependencyBoxes()
+	for _, Depbox in next, LinoriaLib.DependencyBoxes do
 		Depbox:Update();
 	end;
 end;
 
-function Library:MapValue(Value, MinA, MaxA, MinB, MaxB)
+function LinoriaLib:MapValue(Value, MinA, MaxA, MinB, MaxB)
 	return (1 - ((Value - MinA) / (MaxA - MinA))) * MinB + ((Value - MinA) / (MaxA - MinA)) * MaxB;
 end;
 
-function Library:GetTextBounds(Text, Font, Size, Resolution)
+function LinoriaLib:GetTextBounds(Text, Font, Size, Resolution)
 	local Bounds = TextService:GetTextSize(Text, Size, Font, Resolution or Vector2.new(1920, 1080))
 	return Bounds.X, Bounds.Y
 end;
 
-function Library:GetDarkerColor(Color)
+function LinoriaLib:GetDarkerColor(Color)
 	local H, S, V = Color3.toHSV(Color);
 	return Color3.fromHSV(H, S, V / 1.5);
 end;
-Library.AccentColorDark = Library:GetDarkerColor(Library.AccentColor);
+LinoriaLib.AccentColorDark = LinoriaLib:GetDarkerColor(LinoriaLib.AccentColor);
 
-function Library:AddToRegistry(Instance, Properties, IsHud)
-	local Idx = #Library.Registry + 1;
+function LinoriaLib:AddToRegistry(Instance, Properties, IsHud)
+	local Idx = #LinoriaLib.Registry + 1;
 	local Data = {
 		Instance = Instance;
 		Properties = Properties;
 		Idx = Idx;
 	};
 
-	table.insert(Library.Registry, Data);
-	Library.RegistryMap[Instance] = Data;
+	table.insert(LinoriaLib.Registry, Data);
+	LinoriaLib.RegistryMap[Instance] = Data;
 
 	if IsHud then
-		table.insert(Library.HudRegistry, Data);
+		table.insert(LinoriaLib.HudRegistry, Data);
 	end;
 end;
 
-function Library:RemoveFromRegistry(Instance)
-	local Data = Library.RegistryMap[Instance];
+function LinoriaLib:RemoveFromRegistry(Instance)
+	local Data = LinoriaLib.RegistryMap[Instance];
 
 	if Data then
-		for Idx = #Library.Registry, 1, -1 do
-			if Library.Registry[Idx] == Data then
-				table.remove(Library.Registry, Idx);
+		for Idx = #LinoriaLib.Registry, 1, -1 do
+			if LinoriaLib.Registry[Idx] == Data then
+				table.remove(LinoriaLib.Registry, Idx);
 			end;
 		end;
 
-		for Idx = #Library.HudRegistry, 1, -1 do
-			if Library.HudRegistry[Idx] == Data then
-				table.remove(Library.HudRegistry, Idx);
+		for Idx = #LinoriaLib.HudRegistry, 1, -1 do
+			if LinoriaLib.HudRegistry[Idx] == Data then
+				table.remove(LinoriaLib.HudRegistry, Idx);
 			end;
 		end;
 
-		Library.RegistryMap[Instance] = nil;
+		LinoriaLib.RegistryMap[Instance] = nil;
 	end;
 end;
 
-function Library:UpdateColorsUsingRegistry()
+function LinoriaLib:UpdateColorsUsingRegistry()
 	-- TODO: Could have an 'active' list of objects
 	-- where the active list only contains Visible objects.
 
@@ -552,10 +552,10 @@ function Library:UpdateColorsUsingRegistry()
 
 	-- The above would be especially efficient for a rainbow menu color or live color-changing.
 
-	for Idx, Object in next, Library.Registry do
+	for Idx, Object in next, LinoriaLib.Registry do
 		for Property, ColorIdx in next, Object.Properties do
 			if type(ColorIdx) == 'string' then
-				Object.Instance[Property] = Library[ColorIdx];
+				Object.Instance[Property] = LinoriaLib[ColorIdx];
 			elseif type(ColorIdx) == 'function' then
 				Object.Instance[Property] = ColorIdx()
 			end
@@ -563,27 +563,27 @@ function Library:UpdateColorsUsingRegistry()
 	end;
 end;
 
-function Library:GiveSignal(Signal)
-	-- Only used for signals not attached to library instances, as those should be cleaned up on object destruction by Roblox
-	table.insert(Library.Signals, Signal)
+function LinoriaLib:GiveSignal(Signal)
+	-- Only used for signals not attached to LinoriaLib instances, as those should be cleaned up on object destruction by Roblox
+	table.insert(LinoriaLib.Signals, Signal)
 end
 
-function Library:Unload()
+function LinoriaLib:Unload()
 	-- Unload all of the signals
-	for Idx = #Library.Signals, 1, -1 do
-		local Connection = table.remove(Library.Signals, Idx)
+	for Idx = #LinoriaLib.Signals, 1, -1 do
+		local Connection = table.remove(LinoriaLib.Signals, Idx)
 		Connection:Disconnect()
 	end
 
 	-- Call our unload callback, maybe to undo some hooks etc
-	if Library.OnUnload then
-		Library.OnUnload()
+	if LinoriaLib.OnUnload then
+		LinoriaLib.OnUnload()
 	end
 
 	ScreenGui:Destroy()
 end
 
-function Library:Reload()
+function LinoriaLib:Reload()
 	ScreenGui:Destroy()
 
 	ScreenGui = Instance.new('ScreenGui');
@@ -592,24 +592,24 @@ function Library:Reload()
 	ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global;
 	ScreenGui.Parent = GetHUI();
 
-	Library.ScreenGui = ScreenGui;
+	LinoriaLib.ScreenGui = ScreenGui;
 
-	Library:CreateUIElements()
+	LinoriaLib:CreateUIElements()
 
-	Library:GiveSignal(ScreenGui.DescendantRemoving:Connect(function(Instance)
-		if Library.RegistryMap[Instance] then
-			Library:RemoveFromRegistry(Instance);
+	LinoriaLib:GiveSignal(ScreenGui.DescendantRemoving:Connect(function(Instance)
+		if LinoriaLib.RegistryMap[Instance] then
+			LinoriaLib:RemoveFromRegistry(Instance);
 		end;
 	end))
 end
 
-function Library:OnUnload(Callback)
-	Library.OnUnload = Callback
+function LinoriaLib:OnUnload(Callback)
+	LinoriaLib.OnUnload = Callback
 end
 
-Library:GiveSignal(ScreenGui.DescendantRemoving:Connect(function(Instance)
-	if Library.RegistryMap[Instance] then
-		Library:RemoveFromRegistry(Instance);
+LinoriaLib:GiveSignal(ScreenGui.DescendantRemoving:Connect(function(Instance)
+	if LinoriaLib.RegistryMap[Instance] then
+		LinoriaLib:RemoveFromRegistry(Instance);
 	end;
 end))
 
@@ -643,9 +643,9 @@ do
 
 		ColorPicker:SetHSVFromRGB(ColorPicker.Value);
 
-		local DisplayFrame = Library:Create('Frame', {
+		local DisplayFrame = LinoriaLib:Create('Frame', {
 			BackgroundColor3 = ColorPicker.Value;
-			BorderColor3 = Library:GetDarkerColor(ColorPicker.Value);
+			BorderColor3 = LinoriaLib:GetDarkerColor(ColorPicker.Value);
 			BorderMode = Enum.BorderMode.Inset;
 			Size = UDim2.new(0, 28, 0, 14);
 			ZIndex = 6;
@@ -653,7 +653,7 @@ do
 		});
 
 		-- Transparency image taken from https://github.com/matas3535/SplixPrivateDrawingLibrary/blob/main/Library.lua cus i'm lazy
-		local CheckerFrame = Library:Create('ImageLabel', {
+		local CheckerFrame = LinoriaLib:Create('ImageLabel', {
 			BorderSizePixel = 0;
 			Size = UDim2.new(0, 27, 0, 13);
 			ZIndex = 5;
@@ -663,11 +663,11 @@ do
 		});
 
 		-- 1/16/23
-		-- Rewrote this to be placed inside the Library ScreenGui
+		-- Rewrote this to be placed inside the LinoriaLib ScreenGui
 		-- There was some issue which caused RelativeOffset to be way off
 		-- Thus the color picker would never show
 
-		local PickerFrameOuter = Library:Create('Frame', {
+		local PickerFrameOuter = LinoriaLib:Create('Frame', {
 			Name = 'Color';
 			BackgroundColor3 = Color3.new(1, 1, 1);
 			BorderColor3 = Color3.new(0, 0, 0);
@@ -682,24 +682,24 @@ do
 			PickerFrameOuter.Position = UDim2.fromOffset(DisplayFrame.AbsolutePosition.X, DisplayFrame.AbsolutePosition.Y + 18);
 		end)
 
-		local PickerFrameInner = Library:Create('Frame', {
-			BackgroundColor3 = Library.BackgroundColor;
-			BorderColor3 = Library.OutlineColor;
+		local PickerFrameInner = LinoriaLib:Create('Frame', {
+			BackgroundColor3 = LinoriaLib.BackgroundColor;
+			BorderColor3 = LinoriaLib.OutlineColor;
 			BorderMode = Enum.BorderMode.Inset;
 			Size = UDim2.new(1, 0, 1, 0);
 			ZIndex = 16;
 			Parent = PickerFrameOuter;
 		});
 
-		local Highlight = Library:Create('Frame', {
-			BackgroundColor3 = Library.AccentColor;
+		local Highlight = LinoriaLib:Create('Frame', {
+			BackgroundColor3 = LinoriaLib.AccentColor;
 			BorderSizePixel = 0;
 			Size = UDim2.new(1, 0, 0, 2);
 			ZIndex = 17;
 			Parent = PickerFrameInner;
 		});
 
-		local SatVibMapOuter = Library:Create('Frame', {
+		local SatVibMapOuter = LinoriaLib:Create('Frame', {
 			BorderColor3 = Color3.new(0, 0, 0);
 			Position = UDim2.new(0, 4, 0, 25);
 			Size = UDim2.new(0, 200, 0, 200);
@@ -707,16 +707,16 @@ do
 			Parent = PickerFrameInner;
 		});
 
-		local SatVibMapInner = Library:Create('Frame', {
-			BackgroundColor3 = Library.BackgroundColor;
-			BorderColor3 = Library.OutlineColor;
+		local SatVibMapInner = LinoriaLib:Create('Frame', {
+			BackgroundColor3 = LinoriaLib.BackgroundColor;
+			BorderColor3 = LinoriaLib.OutlineColor;
 			BorderMode = Enum.BorderMode.Inset;
 			Size = UDim2.new(1, 0, 1, 0);
 			ZIndex = 18;
 			Parent = SatVibMapOuter;
 		});
 
-		local SatVibMap = Library:Create('ImageLabel', {
+		local SatVibMap = LinoriaLib:Create('ImageLabel', {
 			BorderSizePixel = 0;
 			Size = UDim2.new(1, 0, 1, 0);
 			ZIndex = 18;
@@ -724,7 +724,7 @@ do
 			Parent = SatVibMapInner;
 		});
 
-		local CursorOuter = Library:Create('ImageLabel', {
+		local CursorOuter = LinoriaLib:Create('ImageLabel', {
 			AnchorPoint = Vector2.new(0.5, 0.5);
 			Size = UDim2.new(0, 6, 0, 6);
 			BackgroundTransparency = 1;
@@ -734,7 +734,7 @@ do
 			Parent = SatVibMap;
 		});
 
-		local CursorInner = Library:Create('ImageLabel', {
+		local CursorInner = LinoriaLib:Create('ImageLabel', {
 			Size = UDim2.new(0, CursorOuter.Size.X.Offset - 2, 0, CursorOuter.Size.Y.Offset - 2);
 			Position = UDim2.new(0, 1, 0, 1);
 			BackgroundTransparency = 1;
@@ -743,7 +743,7 @@ do
 			Parent = CursorOuter;
 		})
 
-		local HueSelectorOuter = Library:Create('Frame', {
+		local HueSelectorOuter = LinoriaLib:Create('Frame', {
 			BorderColor3 = Color3.new(0, 0, 0);
 			Position = UDim2.new(0, 208, 0, 25);
 			Size = UDim2.new(0, 15, 0, 200);
@@ -751,7 +751,7 @@ do
 			Parent = PickerFrameInner;
 		});
 
-		local HueSelectorInner = Library:Create('Frame', {
+		local HueSelectorInner = LinoriaLib:Create('Frame', {
 			BackgroundColor3 = Color3.new(1, 1, 1);
 			BorderSizePixel = 0;
 			Size = UDim2.new(1, 0, 1, 0);
@@ -759,7 +759,7 @@ do
 			Parent = HueSelectorOuter;
 		});
 
-		local HueCursor = Library:Create('Frame', { 
+		local HueCursor = LinoriaLib:Create('Frame', { 
 			BackgroundColor3 = Color3.new(1, 1, 1);
 			AnchorPoint = Vector2.new(0, 0.5);
 			BorderColor3 = Color3.new(0, 0, 0);
@@ -768,7 +768,7 @@ do
 			Parent = HueSelectorInner;
 		});
 
-		local HueBoxOuter = Library:Create('Frame', {
+		local HueBoxOuter = LinoriaLib:Create('Frame', {
 			BorderColor3 = Color3.new(0, 0, 0);
 			Position = UDim2.fromOffset(4, 228),
 			Size = UDim2.new(0.5, -6, 0, 20),
@@ -776,16 +776,16 @@ do
 			Parent = PickerFrameInner;
 		});
 
-		local HueBoxInner = Library:Create('Frame', {
-			BackgroundColor3 = Library.MainColor;
-			BorderColor3 = Library.OutlineColor;
+		local HueBoxInner = LinoriaLib:Create('Frame', {
+			BackgroundColor3 = LinoriaLib.MainColor;
+			BorderColor3 = LinoriaLib.OutlineColor;
 			BorderMode = Enum.BorderMode.Inset;
 			Size = UDim2.new(1, 0, 1, 0);
 			ZIndex = 18,
 			Parent = HueBoxOuter;
 		});
 
-		Library:Create('UIGradient', {
+		LinoriaLib:Create('UIGradient', {
 			Color = ColorSequence.new({
 				ColorSequenceKeypoint.new(0, Color3.new(1, 1, 1)),
 				ColorSequenceKeypoint.new(1, Color3.fromRGB(212, 212, 212))
@@ -794,15 +794,15 @@ do
 			Parent = HueBoxInner;
 		});
 
-		local HueBox = Library:Create('TextBox', {
+		local HueBox = LinoriaLib:Create('TextBox', {
 			BackgroundTransparency = 1;
 			Position = UDim2.new(0, 5, 0, 0);
 			Size = UDim2.new(1, -5, 1, 0);
-			Font = Library.Font;
+			Font = LinoriaLib.Font;
 			PlaceholderColor3 = Color3.fromRGB(190, 190, 190);
 			PlaceholderText = 'Hex color',
 			Text = '#FFFFFF',
-			TextColor3 = Library.FontColor;
+			TextColor3 = LinoriaLib.FontColor;
 			TextSize = 14;
 			TextStrokeTransparency = 0;
 			TextXAlignment = Enum.TextXAlignment.Left;
@@ -810,24 +810,24 @@ do
 			Parent = HueBoxInner;
 		});
 
-		Library:ApplyTextStroke(HueBox);
+		LinoriaLib:ApplyTextStroke(HueBox);
 
-		local RgbBoxBase = Library:Create(HueBoxOuter:Clone(), {
+		local RgbBoxBase = LinoriaLib:Create(HueBoxOuter:Clone(), {
 			Position = UDim2.new(0.5, 2, 0, 228),
 			Size = UDim2.new(0.5, -6, 0, 20),
 			Parent = PickerFrameInner
 		});
 
-		local RgbBox = Library:Create(RgbBoxBase.Frame:FindFirstChild('TextBox'), {
+		local RgbBox = LinoriaLib:Create(RgbBoxBase.Frame:FindFirstChild('TextBox'), {
 			Text = '255, 255, 255',
 			PlaceholderText = 'RGB color',
-			TextColor3 = Library.FontColor
+			TextColor3 = LinoriaLib.FontColor
 		});
 
 		local TransparencyBoxOuter, TransparencyBoxInner, TransparencyCursor;
 		
 		if Info.Transparency then 
-			TransparencyBoxOuter = Library:Create('Frame', {
+			TransparencyBoxOuter = LinoriaLib:Create('Frame', {
 				BorderColor3 = Color3.new(0, 0, 0);
 				Position = UDim2.fromOffset(4, 251);
 				Size = UDim2.new(1, -8, 0, 15);
@@ -835,18 +835,18 @@ do
 				Parent = PickerFrameInner;
 			});
 
-			TransparencyBoxInner = Library:Create('Frame', {
+			TransparencyBoxInner = LinoriaLib:Create('Frame', {
 				BackgroundColor3 = ColorPicker.Value;
-				BorderColor3 = Library.OutlineColor;
+				BorderColor3 = LinoriaLib.OutlineColor;
 				BorderMode = Enum.BorderMode.Inset;
 				Size = UDim2.new(1, 0, 1, 0);
 				ZIndex = 19;
 				Parent = TransparencyBoxOuter;
 			});
 
-			Library:AddToRegistry(TransparencyBoxInner, { BorderColor3 = 'OutlineColor' });
+			LinoriaLib:AddToRegistry(TransparencyBoxInner, { BorderColor3 = 'OutlineColor' });
 
-			Library:Create('ImageLabel', {
+			LinoriaLib:Create('ImageLabel', {
 				BackgroundTransparency = 1;
 				Size = UDim2.new(1, 0, 1, 0);
 				Image = 'http://www.roblox.com/asset/?id=12978095818';
@@ -854,7 +854,7 @@ do
 				Parent = TransparencyBoxInner;
 			});
 
-			TransparencyCursor = Library:Create('Frame', { 
+			TransparencyCursor = LinoriaLib:Create('Frame', { 
 				BackgroundColor3 = Color3.new(1, 1, 1);
 				AnchorPoint = Vector2.new(0.5, 0);
 				BorderColor3 = Color3.new(0, 0, 0);
@@ -864,7 +864,7 @@ do
 			});
 		end;
 
-		local DisplayLabel = Library:CreateLabel({
+		local DisplayLabel = LinoriaLib:CreateLabel({
 			Size = UDim2.new(1, 0, 0, 14);
 			Position = UDim2.fromOffset(5, 5);
 			TextXAlignment = Enum.TextXAlignment.Left;
@@ -879,7 +879,7 @@ do
 		local ContextMenu = {}
 		do
 			ContextMenu.Options = {}
-			ContextMenu.Container = Library:Create('Frame', {
+			ContextMenu.Container = LinoriaLib:Create('Frame', {
 				BorderColor3 = Color3.new(),
 				ZIndex = 14,
 
@@ -887,23 +887,23 @@ do
 				Parent = ScreenGui
 			})
 
-			ContextMenu.Inner = Library:Create('Frame', {
-				BackgroundColor3 = Library.BackgroundColor;
-				BorderColor3 = Library.OutlineColor;
+			ContextMenu.Inner = LinoriaLib:Create('Frame', {
+				BackgroundColor3 = LinoriaLib.BackgroundColor;
+				BorderColor3 = LinoriaLib.OutlineColor;
 				BorderMode = Enum.BorderMode.Inset;
 				Size = UDim2.fromScale(1, 1);
 				ZIndex = 15;
 				Parent = ContextMenu.Container;
 			});
 
-			Library:Create('UIListLayout', {
+			LinoriaLib:Create('UIListLayout', {
 				Name = 'Layout',
 				FillDirection = Enum.FillDirection.Vertical;
 				SortOrder = Enum.SortOrder.LayoutOrder;
 				Parent = ContextMenu.Inner;
 			});
 
-			Library:Create('UIPadding', {
+			LinoriaLib:Create('UIPadding', {
 				Name = 'Padding',
 				PaddingLeft = UDim.new(0, 4),
 				Parent = ContextMenu.Inner,
@@ -936,22 +936,22 @@ do
 			task.spawn(updateMenuPosition)
 			task.spawn(updateMenuSize)
 
-			Library:AddToRegistry(ContextMenu.Inner, {
+			LinoriaLib:AddToRegistry(ContextMenu.Inner, {
 				BackgroundColor3 = 'BackgroundColor';
 				BorderColor3 = 'OutlineColor';
 			});
 
 			function ContextMenu:Show()
-				if Library.IsMobile then
-					Library.CanDrag = false;
+				if LinoriaLib.IsMobile then
+					LinoriaLib.CanDrag = false;
 				end;
 
 				self.Container.Visible = true;
 			end
 
 			function ContextMenu:Hide()
-				if Library.IsMobile then
-					Library.CanDrag = true;
+				if LinoriaLib.IsMobile then
+					LinoriaLib.CanDrag = true;
 				end;
 				
 				self.Container.Visible = false;
@@ -962,7 +962,7 @@ do
 					Callback = function() end
 				end
 
-				local Button = Library:CreateLabel({
+				local Button = LinoriaLib:CreateLabel({
 					Active = false;
 					Size = UDim2.new(1, 0, 0, 15);
 					TextSize = 13;
@@ -972,7 +972,7 @@ do
 					TextXAlignment = Enum.TextXAlignment.Left,
 				});
 
-				Library:OnHighlight(Button, Button, 
+				LinoriaLib:OnHighlight(Button, Button, 
 					{ TextColor3 = 'AccentColor' },
 					{ TextColor3 = 'FontColor' }
 				);
@@ -987,38 +987,38 @@ do
 			end
 
 			ContextMenu:AddOption('Copy color', function()
-				Library.ColorClipboard = ColorPicker.Value
-				Library:Notify('Copied color!', 2)
+				LinoriaLib.ColorClipboard = ColorPicker.Value
+				LinoriaLib:Notify('Copied color!', 2)
 			end)
 
 			ContextMenu:AddOption('Paste color', function()
-				if not Library.ColorClipboard then
-					return Library:Notify('You have not copied a color!', 2)
+				if not LinoriaLib.ColorClipboard then
+					return LinoriaLib:Notify('You have not copied a color!', 2)
 				end
-				ColorPicker:SetValueRGB(Library.ColorClipboard)
+				ColorPicker:SetValueRGB(LinoriaLib.ColorClipboard)
 			end)
 
 
 			ContextMenu:AddOption('Copy HEX', function()
 				pcall(setclipboard, ColorPicker.Value:ToHex())
-				Library:Notify('Copied hex code to clipboard!', 2)
+				LinoriaLib:Notify('Copied hex code to clipboard!', 2)
 			end)
 
 			ContextMenu:AddOption('Copy RGB', function()
 				pcall(setclipboard, table.concat({ math.floor(ColorPicker.Value.R * 255), math.floor(ColorPicker.Value.G * 255), math.floor(ColorPicker.Value.B * 255) }, ', '))
-				Library:Notify('Copied RGB values to clipboard!', 2)
+				LinoriaLib:Notify('Copied RGB values to clipboard!', 2)
 			end)
 
 		end
 
-		Library:AddToRegistry(PickerFrameInner, { BackgroundColor3 = 'BackgroundColor'; BorderColor3 = 'OutlineColor'; });
-		Library:AddToRegistry(Highlight, { BackgroundColor3 = 'AccentColor'; });
-		Library:AddToRegistry(SatVibMapInner, { BackgroundColor3 = 'BackgroundColor'; BorderColor3 = 'OutlineColor'; });
+		LinoriaLib:AddToRegistry(PickerFrameInner, { BackgroundColor3 = 'BackgroundColor'; BorderColor3 = 'OutlineColor'; });
+		LinoriaLib:AddToRegistry(Highlight, { BackgroundColor3 = 'AccentColor'; });
+		LinoriaLib:AddToRegistry(SatVibMapInner, { BackgroundColor3 = 'BackgroundColor'; BorderColor3 = 'OutlineColor'; });
 
-		Library:AddToRegistry(HueBoxInner, { BackgroundColor3 = 'MainColor'; BorderColor3 = 'OutlineColor'; });
-		Library:AddToRegistry(RgbBoxBase.Frame, { BackgroundColor3 = 'MainColor'; BorderColor3 = 'OutlineColor'; });
-		Library:AddToRegistry(RgbBox, { TextColor3 = 'FontColor', });
-		Library:AddToRegistry(HueBox, { TextColor3 = 'FontColor', });
+		LinoriaLib:AddToRegistry(HueBoxInner, { BackgroundColor3 = 'MainColor'; BorderColor3 = 'OutlineColor'; });
+		LinoriaLib:AddToRegistry(RgbBoxBase.Frame, { BackgroundColor3 = 'MainColor'; BorderColor3 = 'OutlineColor'; });
+		LinoriaLib:AddToRegistry(RgbBox, { TextColor3 = 'FontColor', });
+		LinoriaLib:AddToRegistry(HueBox, { TextColor3 = 'FontColor', });
 
 		local SequenceTable = {};
 
@@ -1026,7 +1026,7 @@ do
 			table.insert(SequenceTable, ColorSequenceKeypoint.new(Hue, Color3.fromHSV(Hue, 1, 1)));
 		end;
 
-		local HueSelectorGradient = Library:Create('UIGradient', {
+		local HueSelectorGradient = LinoriaLib:Create('UIGradient', {
 			Color = ColorSequence.new(SequenceTable);
 			Rotation = 90;
 			Parent = HueSelectorInner;
@@ -1058,10 +1058,10 @@ do
 			ColorPicker.Value = Color3.fromHSV(ColorPicker.Hue, ColorPicker.Sat, ColorPicker.Vib);
 			SatVibMap.BackgroundColor3 = Color3.fromHSV(ColorPicker.Hue, 1, 1);
 
-			Library:Create(DisplayFrame, {
+			LinoriaLib:Create(DisplayFrame, {
 				BackgroundColor3 = ColorPicker.Value;
 				BackgroundTransparency = ColorPicker.Transparency;
-				BorderColor3 = Library:GetDarkerColor(ColorPicker.Value);
+				BorderColor3 = LinoriaLib:GetDarkerColor(ColorPicker.Value);
 			});
 
 			if TransparencyBoxInner then
@@ -1075,8 +1075,8 @@ do
 			HueBox.Text = '#' .. ColorPicker.Value:ToHex()
 			RgbBox.Text = table.concat({ math.floor(ColorPicker.Value.R * 255), math.floor(ColorPicker.Value.G * 255), math.floor(ColorPicker.Value.B * 255) }, ', ')
 
-			Library:SafeCallback(ColorPicker.Callback, ColorPicker.Value);
-			Library:SafeCallback(ColorPicker.Changed, ColorPicker.Value);
+			LinoriaLib:SafeCallback(ColorPicker.Callback, ColorPicker.Value);
+			LinoriaLib:SafeCallback(ColorPicker.Changed, ColorPicker.Value);
 		end;
 
 		function ColorPicker:OnChanged(Func)
@@ -1089,20 +1089,20 @@ do
 		end
 
 		function ColorPicker:Show()
-			for Frame, Val in next, Library.OpenedFrames do
+			for Frame, Val in next, LinoriaLib.OpenedFrames do
 				if Frame.Name == 'Color' then
 					Frame.Visible = false;
-					Library.OpenedFrames[Frame] = nil;
+					LinoriaLib.OpenedFrames[Frame] = nil;
 				end;
 			end;
 
 			PickerFrameOuter.Visible = true;
-			Library.OpenedFrames[PickerFrameOuter] = true;
+			LinoriaLib.OpenedFrames[PickerFrameOuter] = true;
 		end;
 
 		function ColorPicker:Hide()
 			PickerFrameOuter.Visible = false;
-			Library.OpenedFrames[PickerFrameOuter] = nil;
+			LinoriaLib.OpenedFrames[PickerFrameOuter] = nil;
 		end;
 
 		function ColorPicker:SetValue(HSV, Transparency)
@@ -1137,7 +1137,7 @@ do
 					RenderStepped:Wait();
 				end;
 
-				Library:AttemptSave();
+				LinoriaLib:AttemptSave();
 			end;
 		end);
 
@@ -1154,12 +1154,12 @@ do
 					RenderStepped:Wait();
 				end;
 
-				Library:AttemptSave();
+				LinoriaLib:AttemptSave();
 			end;
 		end);
 
 		DisplayFrame.InputBegan:Connect(function(Input)
-			if Library:MouseIsOverOpenedFrame() then
+			if LinoriaLib:MouseIsOverOpenedFrame() then
 				return;
 			end;
 
@@ -1191,12 +1191,12 @@ do
 						RenderStepped:Wait();
 					end;
 
-					Library:AttemptSave();
+					LinoriaLib:AttemptSave();
 				end;
 			end);
 		end;
 
-		Library:GiveSignal(InputService.InputBegan:Connect(function(Input)
+		LinoriaLib:GiveSignal(InputService.InputBegan:Connect(function(Input)
 			if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
 				local AbsPos, AbsSize = PickerFrameOuter.AbsolutePosition, PickerFrameOuter.AbsoluteSize;
 
@@ -1206,13 +1206,13 @@ do
 					ColorPicker:Hide();
 				end;
 
-				if not Library:MouseIsOverFrame(ContextMenu.Container) then
+				if not LinoriaLib:MouseIsOverFrame(ContextMenu.Container) then
 					ContextMenu:Hide()
 				end
 			end;
 
 			if Input.UserInputType == Enum.UserInputType.MouseButton2 and ContextMenu.Container.Visible then
-				if not Library:MouseIsOverFrame(ContextMenu.Container) and not Library:MouseIsOverFrame(DisplayFrame) then
+				if not LinoriaLib:MouseIsOverFrame(ContextMenu.Container) and not LinoriaLib:MouseIsOverFrame(DisplayFrame) then
 					ContextMenu:Hide()
 				end
 			end
@@ -1248,7 +1248,7 @@ do
 			Info.Mode = 'Toggle'
 		end
 
-		local PickOuter = Library:Create('Frame', {
+		local PickOuter = LinoriaLib:Create('Frame', {
 			BackgroundColor3 = Color3.new(0, 0, 0);
 			BorderColor3 = Color3.new(0, 0, 0);
 			Size = UDim2.new(0, 28, 0, 15);
@@ -1256,21 +1256,21 @@ do
 			Parent = ToggleLabel;
 		});
 
-		local PickInner = Library:Create('Frame', {
-			BackgroundColor3 = Library.BackgroundColor;
-			BorderColor3 = Library.OutlineColor;
+		local PickInner = LinoriaLib:Create('Frame', {
+			BackgroundColor3 = LinoriaLib.BackgroundColor;
+			BorderColor3 = LinoriaLib.OutlineColor;
 			BorderMode = Enum.BorderMode.Inset;
 			Size = UDim2.new(1, 0, 1, 0);
 			ZIndex = 7;
 			Parent = PickOuter;
 		});
 
-		Library:AddToRegistry(PickInner, {
+		LinoriaLib:AddToRegistry(PickInner, {
 			BackgroundColor3 = 'BackgroundColor';
 			BorderColor3 = 'OutlineColor';
 		});
 
-		local DisplayLabel = Library:CreateLabel({
+		local DisplayLabel = LinoriaLib:CreateLabel({
 			Size = UDim2.new(1, 0, 1, 0);
 			TextSize = 13;
 			Text = Info.Default;
@@ -1279,7 +1279,7 @@ do
 			Parent = PickInner;
 		});
 
-		local ModeSelectOuter = Library:Create('Frame', {
+		local ModeSelectOuter = LinoriaLib:Create('Frame', {
 			BorderColor3 = Color3.new(0, 0, 0);
 			Position = UDim2.fromOffset(ToggleLabel.AbsolutePosition.X + ToggleLabel.AbsoluteSize.X + 4, ToggleLabel.AbsolutePosition.Y + 1);
 			Size = UDim2.new(0, 60, 0, 45 + 2);
@@ -1292,33 +1292,33 @@ do
 			ModeSelectOuter.Position = UDim2.fromOffset(ToggleLabel.AbsolutePosition.X + ToggleLabel.AbsoluteSize.X + 4, ToggleLabel.AbsolutePosition.Y + 1);
 		end);
 
-		local ModeSelectInner = Library:Create('Frame', {
-			BackgroundColor3 = Library.BackgroundColor;
-			BorderColor3 = Library.OutlineColor;
+		local ModeSelectInner = LinoriaLib:Create('Frame', {
+			BackgroundColor3 = LinoriaLib.BackgroundColor;
+			BorderColor3 = LinoriaLib.OutlineColor;
 			BorderMode = Enum.BorderMode.Inset;
 			Size = UDim2.new(1, 0, 1, 0);
 			ZIndex = 15;
 			Parent = ModeSelectOuter;
 		});
 
-		Library:AddToRegistry(ModeSelectInner, {
+		LinoriaLib:AddToRegistry(ModeSelectInner, {
 			BackgroundColor3 = 'BackgroundColor';
 			BorderColor3 = 'OutlineColor';
 		});
 
-		Library:Create('UIListLayout', {
+		LinoriaLib:Create('UIListLayout', {
 			FillDirection = Enum.FillDirection.Vertical;
 			SortOrder = Enum.SortOrder.LayoutOrder;
 			Parent = ModeSelectInner;
 		});
 
-		local ContainerLabel = Library:CreateLabel({
+		local ContainerLabel = LinoriaLib:CreateLabel({
 			TextXAlignment = Enum.TextXAlignment.Left;
 			Size = UDim2.new(1, 0, 0, 18);
 			TextSize = 13;
 			Visible = false;
 			ZIndex = 110;
-			Parent = Library.KeybindContainer;
+			Parent = LinoriaLib.KeybindContainer;
 		},  true);
 
 		local Modes = Info.Modes or { 'Always', 'Toggle', 'Hold' };
@@ -1327,7 +1327,7 @@ do
 		for Idx, Mode in next, Modes do
 			local ModeButton = {};
 
-			local Label = Library:CreateLabel({
+			local Label = LinoriaLib:CreateLabel({
 				Active = false;
 				Size = UDim2.new(1, 0, 0, 15);
 				TextSize = 13;
@@ -1343,8 +1343,8 @@ do
 
 				KeyPicker.Mode = Mode;
 
-				Label.TextColor3 = Library.AccentColor;
-				Library.RegistryMap[Label].Properties.TextColor3 = 'AccentColor';
+				Label.TextColor3 = LinoriaLib.AccentColor;
+				LinoriaLib.RegistryMap[Label].Properties.TextColor3 = 'AccentColor';
 
 				ModeSelectOuter.Visible = false;
 			end;
@@ -1352,14 +1352,14 @@ do
 			function ModeButton:Deselect()
 				KeyPicker.Mode = nil;
 
-				Label.TextColor3 = Library.FontColor;
-				Library.RegistryMap[Label].Properties.TextColor3 = 'FontColor';
+				Label.TextColor3 = LinoriaLib.FontColor;
+				LinoriaLib.RegistryMap[Label].Properties.TextColor3 = 'FontColor';
 			end;
 
 			Label.InputBegan:Connect(function(Input)
 				if Input.UserInputType == Enum.UserInputType.MouseButton1 then
 					ModeButton:Select();
-					Library:AttemptSave();
+					LinoriaLib:AttemptSave();
 				end;
 			end);
 
@@ -1380,14 +1380,14 @@ do
 			ContainerLabel.Text = string.format('[%s] %s (%s)', KeyPicker.Value, Info.Text, KeyPicker.Mode);
 
 			ContainerLabel.Visible = true;
-			ContainerLabel.TextColor3 = State and Library.AccentColor or Library.FontColor;
+			ContainerLabel.TextColor3 = State and LinoriaLib.AccentColor or LinoriaLib.FontColor;
 
-			Library.RegistryMap[ContainerLabel].Properties.TextColor3 = State and 'AccentColor' or 'FontColor';
+			LinoriaLib.RegistryMap[ContainerLabel].Properties.TextColor3 = State and 'AccentColor' or 'FontColor';
 
 			local YSize = 0
 			local XSize = 0
 
-			for _, Label in next, Library.KeybindContainer:GetChildren() do
+			for _, Label in next, LinoriaLib.KeybindContainer:GetChildren() do
 				if Label:IsA('TextLabel') and Label.Visible then
 					YSize = YSize + 18;
 					if (Label.TextBounds.X > XSize) then
@@ -1396,7 +1396,7 @@ do
 				end;
 			end;
 
-			Library.KeybindFrame.Size = UDim2.new(0, math.max(XSize + 10, 210), 0, YSize + 23)
+			LinoriaLib.KeybindFrame.Size = UDim2.new(0, math.max(XSize + 10, 210), 0, YSize + 23)
 		end;
 
 		function KeyPicker:GetState()
@@ -1446,14 +1446,14 @@ do
 				ParentObj:SetValue(not ParentObj.Value)
 			end
 
-			Library:SafeCallback(KeyPicker.Callback, KeyPicker.Toggled)
-			Library:SafeCallback(KeyPicker.Clicked, KeyPicker.Toggled)
+			LinoriaLib:SafeCallback(KeyPicker.Callback, KeyPicker.Toggled)
+			LinoriaLib:SafeCallback(KeyPicker.Clicked, KeyPicker.Toggled)
 		end
 
 		local Picking = false;
 
 		PickOuter.InputBegan:Connect(function(Input)
-			if Input.UserInputType == Enum.UserInputType.MouseButton1 and not Library:MouseIsOverOpenedFrame() then
+			if Input.UserInputType == Enum.UserInputType.MouseButton1 and not LinoriaLib:MouseIsOverOpenedFrame() then
 				Picking = true;
 
 				DisplayLabel.Text = '';
@@ -1494,19 +1494,19 @@ do
 					DisplayLabel.Text = Key;
 					KeyPicker.Value = Key;
 
-					Library:SafeCallback(KeyPicker.ChangedCallback, Input.KeyCode or Input.UserInputType)
-					Library:SafeCallback(KeyPicker.Changed, Input.KeyCode or Input.UserInputType)
+					LinoriaLib:SafeCallback(KeyPicker.ChangedCallback, Input.KeyCode or Input.UserInputType)
+					LinoriaLib:SafeCallback(KeyPicker.Changed, Input.KeyCode or Input.UserInputType)
 
-					Library:AttemptSave();
+					LinoriaLib:AttemptSave();
 
 					Event:Disconnect();
 				end);
-			elseif Input.UserInputType == Enum.UserInputType.MouseButton2 and not Library:MouseIsOverOpenedFrame() then
+			elseif Input.UserInputType == Enum.UserInputType.MouseButton2 and not LinoriaLib:MouseIsOverOpenedFrame() then
 				ModeSelectOuter.Visible = true;
 			end;
 		end);
 
-		Library:GiveSignal(InputService.InputBegan:Connect(function(Input)
+		LinoriaLib:GiveSignal(InputService.InputBegan:Connect(function(Input)
 			if KeyPicker.Value == "Unknown" then return end
 		
 			if (not Picking) and (not InputService:GetFocusedTextBox()) then
@@ -1541,7 +1541,7 @@ do
 			end;
 		end))
 
-		Library:GiveSignal(InputService.InputEnded:Connect(function(Input)
+		LinoriaLib:GiveSignal(InputService.InputEnded:Connect(function(Input)
 			if (not Picking) then
 				KeyPicker:Update();
 			end;
@@ -1570,7 +1570,7 @@ do
 		local Groupbox = self;
 		local Container = Groupbox.Container;
 
-		Library:Create('Frame', {
+		LinoriaLib:Create('Frame', {
 			BackgroundTransparency = 1;
 			Size = UDim2.new(1, 0, 0, Size);
 			ZIndex = 1;
@@ -1584,7 +1584,7 @@ do
 		local Groupbox = self;
 		local Container = Groupbox.Container;
 
-		local TextLabel = Library:CreateLabel({
+		local TextLabel = LinoriaLib:CreateLabel({
 			Size = UDim2.new(1, -4, 0, 15);
 			TextSize = 14;
 			Text = Text;
@@ -1595,10 +1595,10 @@ do
 		});
 
 		if DoesWrap then
-			local Y = select(2, Library:GetTextBounds(Text, Library.Font, 14, Vector2.new(TextLabel.AbsoluteSize.X, math.huge)))
+			local Y = select(2, LinoriaLib:GetTextBounds(Text, LinoriaLib.Font, 14, Vector2.new(TextLabel.AbsoluteSize.X, math.huge)))
 			TextLabel.Size = UDim2.new(1, -4, 0, Y)
 		else
-			Library:Create('UIListLayout', {
+			LinoriaLib:Create('UIListLayout', {
 				Padding = UDim.new(0, 4);
 				FillDirection = Enum.FillDirection.Horizontal;
 				HorizontalAlignment = Enum.HorizontalAlignment.Right;
@@ -1614,7 +1614,7 @@ do
 			TextLabel.Text = Text
 
 			if DoesWrap then
-				local Y = select(2, Library:GetTextBounds(Text, Library.Font, 14, Vector2.new(TextLabel.AbsoluteSize.X, math.huge)))
+				local Y = select(2, LinoriaLib:GetTextBounds(Text, LinoriaLib.Font, 14, Vector2.new(TextLabel.AbsoluteSize.X, math.huge)))
 				TextLabel.Size = UDim2.new(1, -4, 0, Y)
 			end
 
@@ -1655,23 +1655,23 @@ do
 		local Container = Groupbox.Container;
 
 		local function CreateBaseButton(Button)
-			local Outer = Library:Create('Frame', {
+			local Outer = LinoriaLib:Create('Frame', {
 				BackgroundColor3 = Color3.new(0, 0, 0);
 				BorderColor3 = Color3.new(0, 0, 0);
 				Size = UDim2.new(1, -4, 0, 20);
 				ZIndex = 5;
 			});
 
-			local Inner = Library:Create('Frame', {
-				BackgroundColor3 = Library.MainColor;
-				BorderColor3 = Library.OutlineColor;
+			local Inner = LinoriaLib:Create('Frame', {
+				BackgroundColor3 = LinoriaLib.MainColor;
+				BorderColor3 = LinoriaLib.OutlineColor;
 				BorderMode = Enum.BorderMode.Inset;
 				Size = UDim2.new(1, 0, 1, 0);
 				ZIndex = 6;
 				Parent = Outer;
 			});
 
-			local Label = Library:CreateLabel({
+			local Label = LinoriaLib:CreateLabel({
 				Size = UDim2.new(1, 0, 1, 0);
 				TextSize = 14;
 				Text = Button.Text;
@@ -1679,7 +1679,7 @@ do
 				Parent = Inner;
 			});
 
-			Library:Create('UIGradient', {
+			LinoriaLib:Create('UIGradient', {
 				Color = ColorSequence.new({
 					ColorSequenceKeypoint.new(0, Color3.new(1, 1, 1)),
 					ColorSequenceKeypoint.new(1, Color3.fromRGB(212, 212, 212))
@@ -1688,16 +1688,16 @@ do
 				Parent = Inner;
 			});
 
-			Library:AddToRegistry(Outer, {
+			LinoriaLib:AddToRegistry(Outer, {
 				BorderColor3 = 'Black';
 			});
 
-			Library:AddToRegistry(Inner, {
+			LinoriaLib:AddToRegistry(Inner, {
 				BackgroundColor3 = 'MainColor';
 				BorderColor3 = 'OutlineColor';
 			});
 
-			Library:OnHighlight(Outer, Outer,
+			LinoriaLib:OnHighlight(Outer, Outer,
 				{ BorderColor3 = 'AccentColor' },
 				{ BorderColor3 = 'Black' }
 			);
@@ -1724,7 +1724,7 @@ do
 			end
 
 			local function ValidateClick(Input)
-				if Library:MouseIsOverOpenedFrame(Input) then
+				if LinoriaLib:MouseIsOverOpenedFrame(Input) then
 					return false
 				end
 
@@ -1742,30 +1742,30 @@ do
 				if Button.Locked then return end
 
 				if Button.DoubleClick then
-					Library:RemoveFromRegistry(Button.Label)
-					Library:AddToRegistry(Button.Label, { TextColor3 = 'AccentColor' })
+					LinoriaLib:RemoveFromRegistry(Button.Label)
+					LinoriaLib:AddToRegistry(Button.Label, { TextColor3 = 'AccentColor' })
 
-					Button.Label.TextColor3 = Library.AccentColor
+					Button.Label.TextColor3 = LinoriaLib.AccentColor
 					Button.Label.Text = 'Are you sure?'
 					Button.Locked = true
 
 					local clicked = WaitForEvent(Button.Outer.InputBegan, 0.5, ValidateClick)
 
-					Library:RemoveFromRegistry(Button.Label)
-					Library:AddToRegistry(Button.Label, { TextColor3 = 'FontColor' })
+					LinoriaLib:RemoveFromRegistry(Button.Label)
+					LinoriaLib:AddToRegistry(Button.Label, { TextColor3 = 'FontColor' })
 
-					Button.Label.TextColor3 = Library.FontColor
+					Button.Label.TextColor3 = LinoriaLib.FontColor
 					Button.Label.Text = Button.Text
 					task.defer(rawset, Button, 'Locked', false)
 
 					if clicked then
-						Library:SafeCallback(Button.Func)
+						LinoriaLib:SafeCallback(Button.Func)
 					end
 
 					return
 				end
 
-				Library:SafeCallback(Button.Func);
+				LinoriaLib:SafeCallback(Button.Func);
 			end)
 		end
 
@@ -1776,7 +1776,7 @@ do
 
 		function Button:AddTooltip(tooltip)
 			if type(tooltip) == 'string' then
-				Library:AddToolTip(tooltip, self.Outer)
+				LinoriaLib:AddToolTip(tooltip, self.Outer)
 			end
 			return self
 		end
@@ -1797,7 +1797,7 @@ do
 
 			function SubButton:AddTooltip(tooltip)
 				if type(tooltip) == 'string' then
-					Library:AddToolTip(tooltip, self.Outer)
+					LinoriaLib:AddToolTip(tooltip, self.Outer)
 				end
 				return SubButton
 			end
@@ -1829,7 +1829,7 @@ do
 		}
 
 		Groupbox:AddBlank(2);
-		local DividerOuter = Library:Create('Frame', {
+		local DividerOuter = LinoriaLib:Create('Frame', {
 			BackgroundColor3 = Color3.new(0, 0, 0);
 			BorderColor3 = Color3.new(0, 0, 0);
 			Size = UDim2.new(1, -4, 0, 5);
@@ -1837,20 +1837,20 @@ do
 			Parent = Container;
 		});
 
-		local DividerInner = Library:Create('Frame', {
-			BackgroundColor3 = Library.MainColor;
-			BorderColor3 = Library.OutlineColor;
+		local DividerInner = LinoriaLib:Create('Frame', {
+			BackgroundColor3 = LinoriaLib.MainColor;
+			BorderColor3 = LinoriaLib.OutlineColor;
 			BorderMode = Enum.BorderMode.Inset;
 			Size = UDim2.new(1, 0, 1, 0);
 			ZIndex = 6;
 			Parent = DividerOuter;
 		});
 
-		Library:AddToRegistry(DividerOuter, {
+		LinoriaLib:AddToRegistry(DividerOuter, {
 			BorderColor3 = 'Black';
 		});
 
-		Library:AddToRegistry(DividerInner, {
+		LinoriaLib:AddToRegistry(DividerInner, {
 			BackgroundColor3 = 'MainColor';
 			BorderColor3 = 'OutlineColor';
 		});
@@ -1874,7 +1874,7 @@ do
 		local Groupbox = self;
 		local Container = Groupbox.Container;
 
-		local InputLabel = Library:CreateLabel({
+		local InputLabel = LinoriaLib:CreateLabel({
 			Size = UDim2.new(1, 0, 0, 15);
 			TextSize = 14;
 			Text = Info.Text;
@@ -1885,7 +1885,7 @@ do
 
 		Groupbox:AddBlank(1);
 
-		local TextBoxOuter = Library:Create('Frame', {
+		local TextBoxOuter = LinoriaLib:Create('Frame', {
 			BackgroundColor3 = Color3.new(0, 0, 0);
 			BorderColor3 = Color3.new(0, 0, 0);
 			Size = UDim2.new(1, -4, 0, 20);
@@ -1893,30 +1893,30 @@ do
 			Parent = Container;
 		});
 
-		local TextBoxInner = Library:Create('Frame', {
-			BackgroundColor3 = Library.MainColor;
-			BorderColor3 = Library.OutlineColor;
+		local TextBoxInner = LinoriaLib:Create('Frame', {
+			BackgroundColor3 = LinoriaLib.MainColor;
+			BorderColor3 = LinoriaLib.OutlineColor;
 			BorderMode = Enum.BorderMode.Inset;
 			Size = UDim2.new(1, 0, 1, 0);
 			ZIndex = 6;
 			Parent = TextBoxOuter;
 		});
 
-		Library:AddToRegistry(TextBoxInner, {
+		LinoriaLib:AddToRegistry(TextBoxInner, {
 			BackgroundColor3 = 'MainColor';
 			BorderColor3 = 'OutlineColor';
 		});
 
-		Library:OnHighlight(TextBoxOuter, TextBoxOuter,
+		LinoriaLib:OnHighlight(TextBoxOuter, TextBoxOuter,
 			{ BorderColor3 = 'AccentColor' },
 			{ BorderColor3 = 'Black' }
 		);
 
 		if type(Info.Tooltip) == 'string' then
-			Library:AddToolTip(Info.Tooltip, TextBoxOuter)
+			LinoriaLib:AddToolTip(Info.Tooltip, TextBoxOuter)
 		end
 
-		Library:Create('UIGradient', {
+		LinoriaLib:Create('UIGradient', {
 			Color = ColorSequence.new({
 				ColorSequenceKeypoint.new(0, Color3.new(1, 1, 1)),
 				ColorSequenceKeypoint.new(1, Color3.fromRGB(212, 212, 212))
@@ -1925,7 +1925,7 @@ do
 			Parent = TextBoxInner;
 		});
 
-		local Container = Library:Create('Frame', {
+		local Container = LinoriaLib:Create('Frame', {
 			BackgroundTransparency = 1;
 			ClipsDescendants = true;
 
@@ -1936,18 +1936,18 @@ do
 			Parent = TextBoxInner;
 		})
 
-		local Box = Library:Create('TextBox', {
+		local Box = LinoriaLib:Create('TextBox', {
 			BackgroundTransparency = 1;
 
 			Position = UDim2.fromOffset(0, 0),
 			Size = UDim2.fromScale(5, 1),
 
-			Font = Library.Font;
+			Font = LinoriaLib.Font;
 			PlaceholderColor3 = Color3.fromRGB(190, 190, 190);
 			PlaceholderText = Info.Placeholder or '';
 
 			Text = Info.Default or '';
-			TextColor3 = Library.FontColor;
+			TextColor3 = LinoriaLib.FontColor;
 			TextSize = 14;
 			TextStrokeTransparency = 0;
 			TextXAlignment = Enum.TextXAlignment.Left;
@@ -1958,7 +1958,7 @@ do
 			Parent = Container;
 		});
 
-		local CensoredLabel = Library:CreateLabel({
+		local CensoredLabel = LinoriaLib:CreateLabel({
 			Size = UDim2.fromScale(5, 1);
 			Position = UDim2.fromOffset(0, 0);
 			TextSize = 14;
@@ -1973,7 +1973,7 @@ do
 			Box.TextTruncate = Enum.TextTruncate.AtEnd
 		end
 
-		Library:ApplyTextStroke(Box);
+		LinoriaLib:ApplyTextStroke(Box);
 		
 		function Textbox:SetValue(Text)
 			if Info.MaxLength and #Text > Info.MaxLength then
@@ -1993,8 +1993,8 @@ do
 				CensoredLabel.Text = string.rep("*", #Text)
 			end
 
-			Library:SafeCallback(Textbox.Callback, Textbox.Value);
-			Library:SafeCallback(Textbox.Changed, Textbox.Value);
+			LinoriaLib:SafeCallback(Textbox.Callback, Textbox.Value);
+			LinoriaLib:SafeCallback(Textbox.Changed, Textbox.Value);
 		end;
 
 		if Textbox.Finished then
@@ -2002,12 +2002,12 @@ do
 				if not enter then return end
 
 				Textbox:SetValue(Box.Text);
-				Library:AttemptSave();
+				LinoriaLib:AttemptSave();
 			end)
 		else
 			Box:GetPropertyChangedSignal('Text'):Connect(function()
 				Textbox:SetValue(Box.Text);
-				Library:AttemptSave();
+				LinoriaLib:AttemptSave();
 			end);
 		end
 
@@ -2049,7 +2049,7 @@ do
 		Box.FocusLost:Connect(Update)
 		Box.Focused:Connect(Update)
 
-		Library:AddToRegistry(Box, {
+		LinoriaLib:AddToRegistry(Box, {
 			TextColor3 = 'FontColor';
 		});
 
@@ -2081,7 +2081,7 @@ do
 		local Groupbox = self;
 		local Container = Groupbox.Container;
 
-		local ToggleOuter = Library:Create('Frame', {
+		local ToggleOuter = LinoriaLib:Create('Frame', {
 			BackgroundColor3 = Color3.new(0, 0, 0);
 			BorderColor3 = Color3.new(0, 0, 0);
 			Size = UDim2.new(0, 13, 0, 13);
@@ -2089,25 +2089,25 @@ do
 			Parent = Container;
 		});
 
-		Library:AddToRegistry(ToggleOuter, {
+		LinoriaLib:AddToRegistry(ToggleOuter, {
 			BorderColor3 = 'Black';
 		});
 
-		local ToggleInner = Library:Create('Frame', {
-			BackgroundColor3 = Library.MainColor;
-			BorderColor3 = Library.OutlineColor;
+		local ToggleInner = LinoriaLib:Create('Frame', {
+			BackgroundColor3 = LinoriaLib.MainColor;
+			BorderColor3 = LinoriaLib.OutlineColor;
 			BorderMode = Enum.BorderMode.Inset;
 			Size = UDim2.new(1, 0, 1, 0);
 			ZIndex = 6;
 			Parent = ToggleOuter;
 		});
 
-		Library:AddToRegistry(ToggleInner, {
+		LinoriaLib:AddToRegistry(ToggleInner, {
 			BackgroundColor3 = 'MainColor';
 			BorderColor3 = 'OutlineColor';
 		});
 
-		local ToggleLabel = Library:CreateLabel({
+		local ToggleLabel = LinoriaLib:CreateLabel({
 			Size = UDim2.new(0, 216, 1, 0);
 			Position = UDim2.new(1, 6, 0, -1);
 			TextSize = 14;
@@ -2117,7 +2117,7 @@ do
 			Parent = ToggleInner;
 		});
 
-		Library:Create('UIListLayout', {
+		LinoriaLib:Create('UIListLayout', {
 			Padding = UDim.new(0, 4);
 			FillDirection = Enum.FillDirection.Horizontal;
 			HorizontalAlignment = Enum.HorizontalAlignment.Right;
@@ -2125,19 +2125,19 @@ do
 			Parent = ToggleLabel;
 		});
 
-		local ToggleRegion = Library:Create('Frame', {
+		local ToggleRegion = LinoriaLib:Create('Frame', {
 			BackgroundTransparency = 1;
 			Size = UDim2.new(0, 170, 1, 0);
 			ZIndex = 8;
 			Parent = ToggleOuter;
 		});
 
-		Library:OnHighlight(ToggleRegion, ToggleOuter,
+		LinoriaLib:OnHighlight(ToggleRegion, ToggleOuter,
 			{ BorderColor3 = 'AccentColor' },
 			{ BorderColor3 = 'Black' },
 			function()
 				for _, Addon in next, Toggle.Addons do
-					if Library:MouseIsOverFrame(Addon.DisplayFrame) then return false end
+					if LinoriaLib:MouseIsOverFrame(Addon.DisplayFrame) then return false end
 				end
 				return true
 			end
@@ -2148,16 +2148,16 @@ do
 		end;
 
 		if type(Info.Tooltip) == 'string' then
-			Library:AddToolTip(Info.Tooltip, ToggleRegion)
+			LinoriaLib:AddToolTip(Info.Tooltip, ToggleRegion)
 		end
 
 		function Toggle:Display()
 			if IsKrampus then setthreadcaps(8) end
-			ToggleInner.BackgroundColor3 = Toggle.Value and Library.AccentColor or Library.MainColor;
-			ToggleInner.BorderColor3 = Toggle.Value and Library.AccentColorDark or Library.OutlineColor;
+			ToggleInner.BackgroundColor3 = Toggle.Value and LinoriaLib.AccentColor or LinoriaLib.MainColor;
+			ToggleInner.BorderColor3 = Toggle.Value and LinoriaLib.AccentColorDark or LinoriaLib.OutlineColor;
 
-			Library.RegistryMap[ToggleInner].Properties.BackgroundColor3 = Toggle.Value and 'AccentColor' or 'MainColor';
-			Library.RegistryMap[ToggleInner].Properties.BorderColor3 = Toggle.Value and 'AccentColorDark' or 'OutlineColor';
+			LinoriaLib.RegistryMap[ToggleInner].Properties.BackgroundColor3 = Toggle.Value and 'AccentColor' or 'MainColor';
+			LinoriaLib.RegistryMap[ToggleInner].Properties.BorderColor3 = Toggle.Value and 'AccentColorDark' or 'OutlineColor';
 		end;
 
 		function Toggle:OnChanged(Func)
@@ -2178,25 +2178,25 @@ do
 				end
 			end
 
-			Library:SafeCallback(Toggle.Callback, Toggle.Value);
-			Library:SafeCallback(Toggle.Changed, Toggle.Value);
-			Library:UpdateDependencyBoxes();
+			LinoriaLib:SafeCallback(Toggle.Callback, Toggle.Value);
+			LinoriaLib:SafeCallback(Toggle.Changed, Toggle.Value);
+			LinoriaLib:UpdateDependencyBoxes();
 		end;
 
 		ToggleRegion.InputBegan:Connect(function(Input)
-			if (Input.UserInputType == Enum.UserInputType.MouseButton1 and not Library:MouseIsOverOpenedFrame()) or Input.UserInputType == Enum.UserInputType.Touch then
+			if (Input.UserInputType == Enum.UserInputType.MouseButton1 and not LinoriaLib:MouseIsOverOpenedFrame()) or Input.UserInputType == Enum.UserInputType.Touch then
 				for _, Addon in next, Toggle.Addons do
-					if Library:MouseIsOverFrame(Addon.DisplayFrame) then return end
+					if LinoriaLib:MouseIsOverFrame(Addon.DisplayFrame) then return end
 				end
 				Toggle:SetValue(not Toggle.Value) -- Why was it not like this from the start?
-				Library:AttemptSave();
+				LinoriaLib:AttemptSave();
 			end;
 		end);
 
 		if Toggle.Risky then
-			Library:RemoveFromRegistry(ToggleLabel)
-			ToggleLabel.TextColor3 = Library.RiskColor
-			Library:AddToRegistry(ToggleLabel, { TextColor3 = 'RiskColor' })
+			LinoriaLib:RemoveFromRegistry(ToggleLabel)
+			ToggleLabel.TextColor3 = LinoriaLib.RiskColor
+			LinoriaLib:AddToRegistry(ToggleLabel, { TextColor3 = 'RiskColor' })
 		end
 
 		Toggle:Display();
@@ -2209,7 +2209,7 @@ do
 
 		Toggles[Idx] = Toggle;
 
-		Library:UpdateDependencyBoxes();
+		LinoriaLib:UpdateDependencyBoxes();
 
 		return Toggle;
 	end;
@@ -2235,7 +2235,7 @@ do
 		local Container = Groupbox.Container;
 
 		if not Info.Compact then
-			Library:CreateLabel({
+			LinoriaLib:CreateLabel({
 				Size = UDim2.new(1, 0, 0, 10);
 				TextSize = 14;
 				Text = Info.Text;
@@ -2248,7 +2248,7 @@ do
 			Groupbox:AddBlank(3);
 		end
 
-		local SliderOuter = Library:Create('Frame', {
+		local SliderOuter = LinoriaLib:Create('Frame', {
 			BackgroundColor3 = Color3.new(0, 0, 0);
 			BorderColor3 = Color3.new(0, 0, 0);
 			Size = UDim2.new(1, -4, 0, 13);
@@ -2260,39 +2260,39 @@ do
 			Slider.MaxSize = SliderOuter.AbsoluteSize.X - 2;
 		end);
 
-		Library:AddToRegistry(SliderOuter, {
+		LinoriaLib:AddToRegistry(SliderOuter, {
 			BorderColor3 = 'Black';
 		});
 
-		local SliderInner = Library:Create('Frame', {
-			BackgroundColor3 = Library.MainColor;
-			BorderColor3 = Library.OutlineColor;
+		local SliderInner = LinoriaLib:Create('Frame', {
+			BackgroundColor3 = LinoriaLib.MainColor;
+			BorderColor3 = LinoriaLib.OutlineColor;
 			BorderMode = Enum.BorderMode.Inset;
 			Size = UDim2.new(1, 0, 1, 0);
 			ZIndex = 6;
 			Parent = SliderOuter;
 		});
 
-		Library:AddToRegistry(SliderInner, {
+		LinoriaLib:AddToRegistry(SliderInner, {
 			BackgroundColor3 = 'MainColor';
 			BorderColor3 = 'OutlineColor';
 		});
 
-		local Fill = Library:Create('Frame', {
-			BackgroundColor3 = Library.AccentColor;
-			BorderColor3 = Library.AccentColorDark;
+		local Fill = LinoriaLib:Create('Frame', {
+			BackgroundColor3 = LinoriaLib.AccentColor;
+			BorderColor3 = LinoriaLib.AccentColorDark;
 			Size = UDim2.new(0, 0, 1, 0);
 			ZIndex = 7;
 			Parent = SliderInner;
 		});
 
-		Library:AddToRegistry(Fill, {
+		LinoriaLib:AddToRegistry(Fill, {
 			BackgroundColor3 = 'AccentColor';
 			BorderColor3 = 'AccentColorDark';
 		});
 
-		local HideBorderRight = Library:Create('Frame', {
-			BackgroundColor3 = Library.AccentColor;
+		local HideBorderRight = LinoriaLib:Create('Frame', {
+			BackgroundColor3 = LinoriaLib.AccentColor;
 			BorderSizePixel = 0;
 			Position = UDim2.new(1, 0, 0, 0);
 			Size = UDim2.new(0, 1, 1, 0);
@@ -2300,11 +2300,11 @@ do
 			Parent = Fill;
 		});
 
-		Library:AddToRegistry(HideBorderRight, {
+		LinoriaLib:AddToRegistry(HideBorderRight, {
 			BackgroundColor3 = 'AccentColor';
 		});
 
-		local DisplayLabel = Library:CreateLabel({
+		local DisplayLabel = LinoriaLib:CreateLabel({
 			Size = UDim2.new(1, 0, 1, 0);
 			TextSize = 14;
 			Text = 'Infinite';
@@ -2312,18 +2312,18 @@ do
 			Parent = SliderInner;
 		});
 
-		Library:OnHighlight(SliderOuter, SliderOuter,
+		LinoriaLib:OnHighlight(SliderOuter, SliderOuter,
 			{ BorderColor3 = 'AccentColor' },
 			{ BorderColor3 = 'Black' }
 		);
 
 		if type(Info.Tooltip) == 'string' then
-			Library:AddToolTip(Info.Tooltip, SliderOuter)
+			LinoriaLib:AddToolTip(Info.Tooltip, SliderOuter)
 		end
 
 		function Slider:UpdateColors()
-			Fill.BackgroundColor3 = Library.AccentColor;
-			Fill.BorderColor3 = Library.AccentColorDark;
+			Fill.BackgroundColor3 = LinoriaLib.AccentColor;
+			Fill.BorderColor3 = LinoriaLib.AccentColorDark;
 		end;
 		
 		function Slider:Display()
@@ -2337,7 +2337,7 @@ do
 				DisplayLabel.Text = string.format('%s/%s', Slider.Value .. Suffix, Slider.Max .. Suffix);
 			end
 
-			local X = Library:MapValue(Slider.Value, Slider.Min, Slider.Max, 0, 1);
+			local X = LinoriaLib:MapValue(Slider.Value, Slider.Min, Slider.Max, 0, 1);
 			Fill.Size = UDim2.new(X, 0, 1, 0);
 
 			-- I have no idea what this is
@@ -2358,7 +2358,7 @@ do
 		end;
 
 		function Slider:GetValueFromXScale(X)
-			return Round(Library:MapValue(X, 0, 1, Slider.Min, Slider.Max));
+			return Round(LinoriaLib:MapValue(X, 0, 1, Slider.Min, Slider.Max));
 		end;
 		
 		function Slider:SetMax(Value)
@@ -2389,19 +2389,19 @@ do
 			Slider.Value = Num;
 			Slider:Display();
 
-			Library:SafeCallback(Slider.Callback, Slider.Value);
-			Library:SafeCallback(Slider.Changed, Slider.Value);
+			LinoriaLib:SafeCallback(Slider.Callback, Slider.Value);
+			LinoriaLib:SafeCallback(Slider.Changed, Slider.Value);
 		end;
 
 		SliderInner.InputBegan:Connect(function(Input)
-			if (Input.UserInputType == Enum.UserInputType.MouseButton1 and not Library:MouseIsOverOpenedFrame()) or Input.UserInputType == Enum.UserInputType.Touch then
-				if Library.IsMobile then
-					Library.CanDrag = false;
+			if (Input.UserInputType == Enum.UserInputType.MouseButton1 and not LinoriaLib:MouseIsOverOpenedFrame()) or Input.UserInputType == Enum.UserInputType.Touch then
+				if LinoriaLib.IsMobile then
+					LinoriaLib.CanDrag = false;
 				end;
 
 				local Sides = {};
-				if Library.Window then
-					Sides = Library.Window.Tabs[Library.ActiveTab]:GetSides();
+				if LinoriaLib.Window then
+					Sides = LinoriaLib.Window.Tabs[LinoriaLib.ActiveTab]:GetSides();
 				end
 
 				for _, Side in pairs(Sides) do
@@ -2419,7 +2419,7 @@ do
 				while InputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1 or Enum.UserInputType.Touch) do
 					local nMPos = Mouse.X;
 					local nXOffset = math.clamp(gPos + (nMPos - mPos) + Diff, 0, Slider.MaxSize); -- what in tarnation are these variable names
-					local nXScale = Library:MapValue(nXOffset, 0, Slider.MaxSize, 0, 1);
+					local nXScale = LinoriaLib:MapValue(nXOffset, 0, Slider.MaxSize, 0, 1);
 
 					local nValue = Slider:GetValueFromXScale(nXScale);
 					local OldValue = Slider.Value;
@@ -2428,15 +2428,15 @@ do
 					Slider:Display();
 
 					if nValue ~= OldValue then
-						Library:SafeCallback(Slider.Callback, Slider.Value);
-						Library:SafeCallback(Slider.Changed, Slider.Value);
+						LinoriaLib:SafeCallback(Slider.Callback, Slider.Value);
+						LinoriaLib:SafeCallback(Slider.Changed, Slider.Value);
 					end;
 
 					RenderStepped:Wait();
 				end;
 
-				if Library.IsMobile then
-					Library.CanDrag = true;
+				if LinoriaLib.IsMobile then
+					LinoriaLib.CanDrag = true;
 				end;
 				
 				for _, Side in pairs(Sides) do
@@ -2447,7 +2447,7 @@ do
 					end;
 				end;
 
-				Library:AttemptSave();
+				LinoriaLib:AttemptSave();
 			end;
 		end);
 
@@ -2491,7 +2491,7 @@ do
 		local RelativeOffset = 0;
 
 		if not Info.Compact then
-			local DropdownLabel = Library:CreateLabel({
+			local DropdownLabel = LinoriaLib:CreateLabel({
 				Size = UDim2.new(1, 0, 0, 10);
 				TextSize = 14;
 				Text = Info.Text;
@@ -2510,7 +2510,7 @@ do
 			end;
 		end;
 
-		local DropdownOuter = Library:Create('Frame', {
+		local DropdownOuter = LinoriaLib:Create('Frame', {
 			BackgroundColor3 = Color3.new(0, 0, 0);
 			BorderColor3 = Color3.new(0, 0, 0);
 			Size = UDim2.new(1, -4, 0, 20);
@@ -2518,25 +2518,25 @@ do
 			Parent = Container;
 		});
 
-		Library:AddToRegistry(DropdownOuter, {
+		LinoriaLib:AddToRegistry(DropdownOuter, {
 			BorderColor3 = 'Black';
 		});
 
-		local DropdownInner = Library:Create('Frame', {
-			BackgroundColor3 = Library.MainColor;
-			BorderColor3 = Library.OutlineColor;
+		local DropdownInner = LinoriaLib:Create('Frame', {
+			BackgroundColor3 = LinoriaLib.MainColor;
+			BorderColor3 = LinoriaLib.OutlineColor;
 			BorderMode = Enum.BorderMode.Inset;
 			Size = UDim2.new(1, 0, 1, 0);
 			ZIndex = 6;
 			Parent = DropdownOuter;
 		});
 
-		Library:AddToRegistry(DropdownInner, {
+		LinoriaLib:AddToRegistry(DropdownInner, {
 			BackgroundColor3 = 'MainColor';
 			BorderColor3 = 'OutlineColor';
 		});
 
-		Library:Create('UIGradient', {
+		LinoriaLib:Create('UIGradient', {
 			Color = ColorSequence.new({
 				ColorSequenceKeypoint.new(0, Color3.new(1, 1, 1)),
 				ColorSequenceKeypoint.new(1, Color3.fromRGB(212, 212, 212))
@@ -2545,7 +2545,7 @@ do
 			Parent = DropdownInner;
 		});
 
-		local DropdownArrow = Library:Create('ImageLabel', {
+		local DropdownArrow = LinoriaLib:Create('ImageLabel', {
 			AnchorPoint = Vector2.new(0, 0.5);
 			BackgroundTransparency = 1;
 			Position = UDim2.new(1, -16, 0.5, 0);
@@ -2555,7 +2555,7 @@ do
 			Parent = DropdownInner;
 		});
 
-		local ItemList = Library:CreateLabel({
+		local ItemList = LinoriaLib:CreateLabel({
 			Position = UDim2.new(0, 5, 0, 0);
 			Size = UDim2.new(1, -5, 1, 0);
 			TextSize = 14;
@@ -2566,18 +2566,18 @@ do
 			Parent = DropdownInner;
 		});
 
-		Library:OnHighlight(DropdownOuter, DropdownOuter,
+		LinoriaLib:OnHighlight(DropdownOuter, DropdownOuter,
 			{ BorderColor3 = 'AccentColor' },
 			{ BorderColor3 = 'Black' }
 		);
 
 		if type(Info.Tooltip) == 'string' then
-			Library:AddToolTip(Info.Tooltip, DropdownOuter)
+			LinoriaLib:AddToolTip(Info.Tooltip, DropdownOuter)
 		end
 
 		local MAX_DROPDOWN_ITEMS = 8;
 
-		local ListOuter = Library:Create('Frame', {
+		local ListOuter = LinoriaLib:Create('Frame', {
 			BackgroundColor3 = Color3.new(0, 0, 0);
 			BorderColor3 = Color3.new(0, 0, 0);
 			ZIndex = 20;
@@ -2599,9 +2599,9 @@ do
 
 		DropdownOuter:GetPropertyChangedSignal('AbsolutePosition'):Connect(RecalculateListPosition);
 
-		local ListInner = Library:Create('Frame', {
-			BackgroundColor3 = Library.MainColor;
-			BorderColor3 = Library.OutlineColor;
+		local ListInner = LinoriaLib:Create('Frame', {
+			BackgroundColor3 = LinoriaLib.MainColor;
+			BorderColor3 = LinoriaLib.OutlineColor;
 			BorderMode = Enum.BorderMode.Inset;
 			BorderSizePixel = 0;
 			Size = UDim2.new(1, 0, 1, 0);
@@ -2609,12 +2609,12 @@ do
 			Parent = ListOuter;
 		});
 
-		Library:AddToRegistry(ListInner, {
+		LinoriaLib:AddToRegistry(ListInner, {
 			BackgroundColor3 = 'MainColor';
 			BorderColor3 = 'OutlineColor';
 		});
 
-		local Scrolling = Library:Create('ScrollingFrame', {
+		local Scrolling = LinoriaLib:Create('ScrollingFrame', {
 			BackgroundTransparency = 1;
 			BorderSizePixel = 0;
 			CanvasSize = UDim2.new(0, 0, 0, 0);
@@ -2626,14 +2626,14 @@ do
 			BottomImage = 'rbxasset://textures/ui/Scroll/scroll-middle.png',
 
 			ScrollBarThickness = 3,
-			ScrollBarImageColor3 = Library.AccentColor,
+			ScrollBarImageColor3 = LinoriaLib.AccentColor,
 		});
 
-		Library:AddToRegistry(Scrolling, {
+		LinoriaLib:AddToRegistry(Scrolling, {
 			ScrollBarImageColor3 = 'AccentColor'
 		})
 
-		Library:Create('UIListLayout', {
+		LinoriaLib:Create('UIListLayout', {
 			Padding = UDim.new(0, 0);
 			FillDirection = Enum.FillDirection.Vertical;
 			SortOrder = Enum.SortOrder.LayoutOrder;
@@ -2689,9 +2689,9 @@ do
 
 				Count = Count + 1;
 
-				local Button = Library:Create('Frame', {
-					BackgroundColor3 = Library.MainColor;
-					BorderColor3 = Library.OutlineColor;
+				local Button = LinoriaLib:Create('Frame', {
+					BackgroundColor3 = LinoriaLib.MainColor;
+					BorderColor3 = LinoriaLib.OutlineColor;
 					BorderMode = Enum.BorderMode.Middle;
 					Size = UDim2.new(1, -1, 0, 20);
 					ZIndex = 23;
@@ -2699,12 +2699,12 @@ do
 					Parent = Scrolling;
 				});
 
-				Library:AddToRegistry(Button, {
+				LinoriaLib:AddToRegistry(Button, {
 					BackgroundColor3 = 'MainColor';
 					BorderColor3 = 'OutlineColor';
 				});
 
-				local ButtonLabel = Library:CreateLabel({
+				local ButtonLabel = LinoriaLib:CreateLabel({
 					Active = false;
 					Size = UDim2.new(1, -6, 1, 0);
 					Position = UDim2.new(0, 6, 0, 0);
@@ -2715,7 +2715,7 @@ do
 					Parent = Button;
 				});
 
-				Library:OnHighlight(Button, Button,
+				LinoriaLib:OnHighlight(Button, Button,
 					{ BorderColor3 = 'AccentColor', ZIndex = 24 },
 					{ BorderColor3 = 'OutlineColor', ZIndex = 23 }
 				);
@@ -2735,8 +2735,8 @@ do
 						Selected = Dropdown.Value == Value;
 					end;
 
-					ButtonLabel.TextColor3 = Selected and Library.AccentColor or Library.FontColor;
-					Library.RegistryMap[ButtonLabel].Properties.TextColor3 = Selected and 'AccentColor' or 'FontColor';
+					ButtonLabel.TextColor3 = Selected and LinoriaLib.AccentColor or LinoriaLib.FontColor;
+					LinoriaLib.RegistryMap[ButtonLabel].Properties.TextColor3 = Selected and 'AccentColor' or 'FontColor';
 				end;
 
 				ButtonLabel.InputBegan:Connect(function(Input)
@@ -2770,11 +2770,11 @@ do
 							Table:UpdateButton();
 							Dropdown:Display();
 							
-							Library:UpdateDependencyBoxes();
-							Library:SafeCallback(Dropdown.Callback, Dropdown.Value);
-							Library:SafeCallback(Dropdown.Changed, Dropdown.Value);
+							LinoriaLib:UpdateDependencyBoxes();
+							LinoriaLib:SafeCallback(Dropdown.Callback, Dropdown.Value);
+							LinoriaLib:SafeCallback(Dropdown.Changed, Dropdown.Value);
 
-							Library:AttemptSave();
+							LinoriaLib:AttemptSave();
 						end;
 					end;
 				end);
@@ -2805,24 +2805,24 @@ do
 		end;
 
 		function Dropdown:OpenDropdown()
-			if Library.IsMobile then
-				Library.CanDrag = false;
+			if LinoriaLib.IsMobile then
+				LinoriaLib.CanDrag = false;
 			end;
 
 			ListOuter.Visible = true;
-			Library.OpenedFrames[ListOuter] = true;
+			LinoriaLib.OpenedFrames[ListOuter] = true;
 			DropdownArrow.Rotation = 180;
 			
 			RecalculateListSize();
 		end;
 
 		function Dropdown:CloseDropdown()
-			if Library.IsMobile then            
-				Library.CanDrag = true;
+			if LinoriaLib.IsMobile then            
+				LinoriaLib.CanDrag = true;
 			end;
 
 			ListOuter.Visible = false;
-			Library.OpenedFrames[ListOuter] = nil;
+			LinoriaLib.OpenedFrames[ListOuter] = nil;
 			DropdownArrow.Rotation = 0;
 		end;
 
@@ -2852,12 +2852,12 @@ do
 
 			Dropdown:BuildDropdownList();
 
-			Library:SafeCallback(Dropdown.Callback, Dropdown.Value);
-			Library:SafeCallback(Dropdown.Changed, Dropdown.Value);
+			LinoriaLib:SafeCallback(Dropdown.Callback, Dropdown.Value);
+			LinoriaLib:SafeCallback(Dropdown.Changed, Dropdown.Value);
 		end;
 
 		DropdownOuter.InputBegan:Connect(function(Input)
-			if (Input.UserInputType == Enum.UserInputType.MouseButton1 and not Library:MouseIsOverOpenedFrame()) or Input.UserInputType == Enum.UserInputType.Touch then
+			if (Input.UserInputType == Enum.UserInputType.MouseButton1 and not LinoriaLib:MouseIsOverOpenedFrame()) or Input.UserInputType == Enum.UserInputType.Touch then
 				if ListOuter.Visible then
 					Dropdown:CloseDropdown();
 				else
@@ -2931,21 +2931,21 @@ do
 		local Groupbox = self;
 		local Container = Groupbox.Container;
 
-		local Holder = Library:Create('Frame', {
+		local Holder = LinoriaLib:Create('Frame', {
 			BackgroundTransparency = 1;
 			Size = UDim2.new(1, 0, 0, 0);
 			Visible = false;
 			Parent = Container;
 		});
 
-		local Frame = Library:Create('Frame', {
+		local Frame = LinoriaLib:Create('Frame', {
 			BackgroundTransparency = 1;
 			Size = UDim2.new(1, 0, 1, 0);
 			Visible = true;
 			Parent = Holder;
 		});
 
-		local Layout = Library:Create('UIListLayout', {
+		local Layout = LinoriaLib:Create('UIListLayout', {
 			FillDirection = Enum.FillDirection.Vertical;
 			SortOrder = Enum.SortOrder.LayoutOrder;
 			Parent = Frame;
@@ -2995,7 +2995,7 @@ do
 
 		setmetatable(Depbox, BaseGroupbox);
 
-		table.insert(Library.DependencyBoxes, Depbox);
+		table.insert(LinoriaLib.DependencyBoxes, Depbox);
 
 		return Depbox;
 	end;
@@ -3006,8 +3006,8 @@ do
 	end;
 end;
 
-function Library:CreateUIElements()
-	Library.NotificationArea = Library:Create('Frame', {
+function LinoriaLib:CreateUIElements()
+	LinoriaLib.NotificationArea = LinoriaLib:Create('Frame', {
 		BackgroundTransparency = 1;
 		Position = UDim2.new(0, 0, 0, 40);
 		Size = UDim2.new(0, 300, 0, 200);
@@ -3015,14 +3015,14 @@ function Library:CreateUIElements()
 		Parent = ScreenGui;
 	});
 
-	Library:Create('UIListLayout', {
+	LinoriaLib:Create('UIListLayout', {
 		Padding = UDim.new(0, 4);
 		FillDirection = Enum.FillDirection.Vertical;
 		SortOrder = Enum.SortOrder.LayoutOrder;
-		Parent = Library.NotificationArea;
+		Parent = LinoriaLib.NotificationArea;
 	});
 
-	local WatermarkOuter = Library:Create('Frame', {
+	local WatermarkOuter = LinoriaLib:Create('Frame', {
 		BorderColor3 = Color3.new(0, 0, 0);
 		Position = UDim2.new(0, 100, 0, -25);
 		Size = UDim2.new(0, 213, 0, 20);
@@ -3031,20 +3031,20 @@ function Library:CreateUIElements()
 		Parent = ScreenGui;
 	});
 
-	local WatermarkInner = Library:Create('Frame', {
-		BackgroundColor3 = Library.MainColor;
-		BorderColor3 = Library.AccentColor;
+	local WatermarkInner = LinoriaLib:Create('Frame', {
+		BackgroundColor3 = LinoriaLib.MainColor;
+		BorderColor3 = LinoriaLib.AccentColor;
 		BorderMode = Enum.BorderMode.Inset;
 		Size = UDim2.new(1, 0, 1, 0);
 		ZIndex = 201;
 		Parent = WatermarkOuter;
 	});
 
-	Library:AddToRegistry(WatermarkInner, {
+	LinoriaLib:AddToRegistry(WatermarkInner, {
 		BorderColor3 = 'AccentColor';
 	});
 
-	local InnerFrame = Library:Create('Frame', {
+	local InnerFrame = LinoriaLib:Create('Frame', {
 		BackgroundColor3 = Color3.new(1, 1, 1);
 		BorderSizePixel = 0;
 		Position = UDim2.new(0, 1, 0, 1);
@@ -3053,25 +3053,25 @@ function Library:CreateUIElements()
 		Parent = WatermarkInner;
 	});
 
-	local Gradient = Library:Create('UIGradient', {
+	local Gradient = LinoriaLib:Create('UIGradient', {
 		Color = ColorSequence.new({
-			ColorSequenceKeypoint.new(0, Library:GetDarkerColor(Library.MainColor)),
-			ColorSequenceKeypoint.new(1, Library.MainColor),
+			ColorSequenceKeypoint.new(0, LinoriaLib:GetDarkerColor(LinoriaLib.MainColor)),
+			ColorSequenceKeypoint.new(1, LinoriaLib.MainColor),
 		});
 		Rotation = -90;
 		Parent = InnerFrame;
 	});
 
-	Library:AddToRegistry(Gradient, {
+	LinoriaLib:AddToRegistry(Gradient, {
 		Color = function()
 			return ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Library:GetDarkerColor(Library.MainColor)),
-				ColorSequenceKeypoint.new(1, Library.MainColor),
+				ColorSequenceKeypoint.new(0, LinoriaLib:GetDarkerColor(LinoriaLib.MainColor)),
+				ColorSequenceKeypoint.new(1, LinoriaLib.MainColor),
 			});
 		end
 	});
 
-	local WatermarkLabel = Library:CreateLabel({
+	local WatermarkLabel = LinoriaLib:CreateLabel({
 		Position = UDim2.new(0, 5, 0, 0);
 		Size = UDim2.new(1, -4, 1, 0);
 		TextSize = 14;
@@ -3080,11 +3080,11 @@ function Library:CreateUIElements()
 		Parent = InnerFrame;
 	});
 
-	Library.Watermark = WatermarkOuter;
-	Library.WatermarkText = WatermarkLabel;
-	Library:MakeDraggable(Library.Watermark);
+	LinoriaLib.Watermark = WatermarkOuter;
+	LinoriaLib.WatermarkText = WatermarkLabel;
+	LinoriaLib:MakeDraggable(LinoriaLib.Watermark);
 
-	local KeybindOuter = Library:Create('Frame', {
+	local KeybindOuter = LinoriaLib:Create('Frame', {
 		AnchorPoint = Vector2.new(0, 0.5);
 		BorderColor3 = Color3.new(0, 0, 0);
 		Position = UDim2.new(0, 10, 0.5, 0);
@@ -3094,33 +3094,33 @@ function Library:CreateUIElements()
 		Parent = ScreenGui;
 	});
 
-	local KeybindInner = Library:Create('Frame', {
-		BackgroundColor3 = Library.MainColor;
-		BorderColor3 = Library.OutlineColor;
+	local KeybindInner = LinoriaLib:Create('Frame', {
+		BackgroundColor3 = LinoriaLib.MainColor;
+		BorderColor3 = LinoriaLib.OutlineColor;
 		BorderMode = Enum.BorderMode.Inset;
 		Size = UDim2.new(1, 0, 1, 0);
 		ZIndex = 101;
 		Parent = KeybindOuter;
 	});
 
-	Library:AddToRegistry(KeybindInner, {
+	LinoriaLib:AddToRegistry(KeybindInner, {
 		BackgroundColor3 = 'MainColor';
 		BorderColor3 = 'OutlineColor';
 	}, true);
 
-	local ColorFrame = Library:Create('Frame', {
-		BackgroundColor3 = Library.AccentColor;
+	local ColorFrame = LinoriaLib:Create('Frame', {
+		BackgroundColor3 = LinoriaLib.AccentColor;
 		BorderSizePixel = 0;
 		Size = UDim2.new(1, 0, 0, 2);
 		ZIndex = 102;
 		Parent = KeybindInner;
 	});
 
-	Library:AddToRegistry(ColorFrame, {
+	LinoriaLib:AddToRegistry(ColorFrame, {
 		BackgroundColor3 = 'AccentColor';
 	}, true);
 
-	local KeybindLabel = Library:CreateLabel({
+	local KeybindLabel = LinoriaLib:CreateLabel({
 		Size = UDim2.new(1, 0, 0, 20);
 		Position = UDim2.fromOffset(5, 2),
 		TextXAlignment = Enum.TextXAlignment.Left,
@@ -3129,9 +3129,9 @@ function Library:CreateUIElements()
 		ZIndex = 104;
 		Parent = KeybindInner;
 	});
-	Library:MakeDraggable(KeybindOuter);
+	LinoriaLib:MakeDraggable(KeybindOuter);
 
-	local KeybindContainer = Library:Create('Frame', {
+	local KeybindContainer = LinoriaLib:Create('Frame', {
 		BackgroundTransparency = 1;
 		Size = UDim2.new(1, 0, 1, -20);
 		Position = UDim2.new(0, 0, 0, 20);
@@ -3139,68 +3139,68 @@ function Library:CreateUIElements()
 		Parent = KeybindInner;
 	});
 
-	Library:Create('UIListLayout', {
+	LinoriaLib:Create('UIListLayout', {
 		FillDirection = Enum.FillDirection.Vertical;
 		SortOrder = Enum.SortOrder.LayoutOrder;
 		Parent = KeybindContainer;
 	});
 
-	Library:Create('UIPadding', {
+	LinoriaLib:Create('UIPadding', {
 		PaddingLeft = UDim.new(0, 5),
 		Parent = KeybindContainer,
 	})
 
-	Library.KeybindFrame = KeybindOuter;
-	Library.KeybindContainer = KeybindContainer;
-	Library:MakeDraggable(KeybindOuter);
+	LinoriaLib.KeybindFrame = KeybindOuter;
+	LinoriaLib.KeybindContainer = KeybindContainer;
+	LinoriaLib:MakeDraggable(KeybindOuter);
 end
 
 -- < Create other UI elements >
 do
-	Library:CreateUIElements()
+	LinoriaLib:CreateUIElements()
 end;
 
-function Library:SetWatermarkVisibility(Bool)
-	Library.Watermark.Visible = Bool;
+function LinoriaLib:SetWatermarkVisibility(Bool)
+	LinoriaLib.Watermark.Visible = Bool;
 end;
 
-function Library:SetWatermark(Text)
-	local X, Y = Library:GetTextBounds(Text, Library.Font, 14);
-	Library.Watermark.Size = UDim2.new(0, X + 15, 0, (Y * 1.5) + 3);
-	Library:SetWatermarkVisibility(true)
+function LinoriaLib:SetWatermark(Text)
+	local X, Y = LinoriaLib:GetTextBounds(Text, LinoriaLib.Font, 14);
+	LinoriaLib.Watermark.Size = UDim2.new(0, X + 15, 0, (Y * 1.5) + 3);
+	LinoriaLib:SetWatermarkVisibility(true)
 
-	Library.WatermarkText.Text = Text;
+	LinoriaLib.WatermarkText.Text = Text;
 end;
 
-function Library:Notify(Text, Time, SoundId, SoundVolume)
-	local XSize, YSize = Library:GetTextBounds(Text, Library.Font, 14);
+function LinoriaLib:Notify(Text, Time, SoundId, SoundVolume)
+	local XSize, YSize = LinoriaLib:GetTextBounds(Text, LinoriaLib.Font, 14);
 
 	YSize = YSize + 7
 
-	local NotifyOuter = Library:Create('Frame', {
+	local NotifyOuter = LinoriaLib:Create('Frame', {
 		BorderColor3 = Color3.new(0, 0, 0);
 		Position = UDim2.new(0, 100, 0, 10);
 		Size = UDim2.new(0, 0, 0, YSize);
 		ClipsDescendants = true;
 		ZIndex = 100;
-		Parent = Library.NotificationArea;
+		Parent = LinoriaLib.NotificationArea;
 	});
 
-	local NotifyInner = Library:Create('Frame', {
-		BackgroundColor3 = Library.MainColor;
-		BorderColor3 = Library.OutlineColor;
+	local NotifyInner = LinoriaLib:Create('Frame', {
+		BackgroundColor3 = LinoriaLib.MainColor;
+		BorderColor3 = LinoriaLib.OutlineColor;
 		BorderMode = Enum.BorderMode.Inset;
 		Size = UDim2.new(1, 0, 1, 0);
 		ZIndex = 101;
 		Parent = NotifyOuter;
 	});
 
-	Library:AddToRegistry(NotifyInner, {
+	LinoriaLib:AddToRegistry(NotifyInner, {
 		BackgroundColor3 = 'MainColor';
 		BorderColor3 = 'OutlineColor';
 	}, true);
 
-	local InnerFrame = Library:Create('Frame', {
+	local InnerFrame = LinoriaLib:Create('Frame', {
 		BackgroundColor3 = Color3.new(1, 1, 1);
 		BorderSizePixel = 0;
 		Position = UDim2.new(0, 1, 0, 1);
@@ -3209,25 +3209,25 @@ function Library:Notify(Text, Time, SoundId, SoundVolume)
 		Parent = NotifyInner;
 	});
 
-	local Gradient = Library:Create('UIGradient', {
+	local Gradient = LinoriaLib:Create('UIGradient', {
 		Color = ColorSequence.new({
-			ColorSequenceKeypoint.new(0, Library:GetDarkerColor(Library.MainColor)),
-			ColorSequenceKeypoint.new(1, Library.MainColor),
+			ColorSequenceKeypoint.new(0, LinoriaLib:GetDarkerColor(LinoriaLib.MainColor)),
+			ColorSequenceKeypoint.new(1, LinoriaLib.MainColor),
 		});
 		Rotation = -90;
 		Parent = InnerFrame;
 	});
 
-	Library:AddToRegistry(Gradient, {
+	LinoriaLib:AddToRegistry(Gradient, {
 		Color = function()
 			return ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Library:GetDarkerColor(Library.MainColor)),
-				ColorSequenceKeypoint.new(1, Library.MainColor),
+				ColorSequenceKeypoint.new(0, LinoriaLib:GetDarkerColor(LinoriaLib.MainColor)),
+				ColorSequenceKeypoint.new(1, LinoriaLib.MainColor),
 			});
 		end
 	});
 
-	local NotifyLabel = Library:CreateLabel({
+	local NotifyLabel = LinoriaLib:CreateLabel({
 		Position = UDim2.new(0, 4, 0, 0);
 		Size = UDim2.new(1, -4, 1, 0);
 		Text = Text;
@@ -3237,8 +3237,8 @@ function Library:Notify(Text, Time, SoundId, SoundVolume)
 		Parent = InnerFrame;
 	});
 
-	local LeftColor = Library:Create('Frame', {
-		BackgroundColor3 = Library.AccentColor;
+	local LeftColor = LinoriaLib:Create('Frame', {
+		BackgroundColor3 = LinoriaLib.AccentColor;
 		BorderSizePixel = 0;
 		Position = UDim2.new(0, -1, 0, -1);
 		Size = UDim2.new(0, 3, 1, 2);
@@ -3246,7 +3246,7 @@ function Library:Notify(Text, Time, SoundId, SoundVolume)
 		Parent = NotifyOuter;
 	});
 
-	Library:AddToRegistry(LeftColor, {
+	LinoriaLib:AddToRegistry(LeftColor, {
 		BackgroundColor3 = 'AccentColor';
 	}, true);
 
@@ -3256,7 +3256,7 @@ function Library:Notify(Text, Time, SoundId, SoundVolume)
 	end
 
 	if SoundId then
-		Library:Create('Sound', {
+		LinoriaLib:Create('Sound', {
 			SoundId = "rbxassetid://" .. tostring(SoundId):gsub("rbxassetid://", "");
 			Volume = FinalVolume;
 			PlayOnRemove = true;
@@ -3281,7 +3281,7 @@ function Library:Notify(Text, Time, SoundId, SoundVolume)
 	end);
 end;
 
-function Library:CreateWindow(...)
+function LinoriaLib:CreateWindow(...)
 	local Arguments = { ... }
 	local Config = { AnchorPoint = Vector2.zero }
 
@@ -3295,12 +3295,12 @@ function Library:CreateWindow(...)
 	if type(Config.Title) ~= 'string' then Config.Title = 'No title' end
 	if type(Config.TabPadding) ~= 'number' then Config.TabPadding = 1 end
 	if type(Config.MenuFadeTime) ~= 'number' then Config.MenuFadeTime = 0.2 end
-	if type(Config.ShowCustomCursor) ~= 'boolean' then Library.ShowCustomCursor = true else Library.ShowCustomCursor = Config.ShowCustomCursor end
+	if type(Config.ShowCustomCursor) ~= 'boolean' then LinoriaLib.ShowCustomCursor = true else LinoriaLib.ShowCustomCursor = Config.ShowCustomCursor end
 
 	if typeof(Config.Position) ~= 'UDim2' then Config.Position = UDim2.fromOffset(175, 50) end
 	if typeof(Config.Size) ~= 'UDim2' then 
 		Config.Size = UDim2.fromOffset(550, 600)
-		if Library.IsMobile then
+		if LinoriaLib.IsMobile then
 			local ViewportSizeYOffset = tonumber(workspace.CurrentCamera.ViewportSize.Y) - 35;
 			if ViewportSizeYOffset >= 200 and ViewportSizeYOffset <= 600 then
 				Config.Size = UDim2.fromOffset(550, ViewportSizeYOffset)
@@ -3323,7 +3323,7 @@ function Library:CreateWindow(...)
 		Tabs = {};
 	};
 
-	local Outer = Library:Create('Frame', {
+	local Outer = LinoriaLib:Create('Frame', {
 		AnchorPoint = Config.AnchorPoint;
 		BackgroundColor3 = Color3.new(0, 0, 0);
 		BorderSizePixel = 0;
@@ -3333,16 +3333,16 @@ function Library:CreateWindow(...)
 		ZIndex = 1;
 		Parent = ScreenGui;
 	});
-	LibraryMainOuterFrame = Outer;
-	Library:MakeDraggable(Outer, 25);
+	LinoriaLibMainOuterFrame = Outer;
+	LinoriaLib:MakeDraggable(Outer, 25);
 
 	if Config.Resizable then
-		Library:MakeResizable(Outer, Library.MinSize);
+		LinoriaLib:MakeResizable(Outer, LinoriaLib.MinSize);
 	end
 
-	local Inner = Library:Create('Frame', {
-		BackgroundColor3 = Library.MainColor;
-		BorderColor3 = Library.AccentColor;
+	local Inner = LinoriaLib:Create('Frame', {
+		BackgroundColor3 = LinoriaLib.MainColor;
+		BorderColor3 = LinoriaLib.AccentColor;
 		BorderMode = Enum.BorderMode.Inset;
 		Position = UDim2.new(0, 1, 0, 1);
 		Size = UDim2.new(1, -2, 1, -2);
@@ -3350,12 +3350,12 @@ function Library:CreateWindow(...)
 		Parent = Outer;
 	});
 
-	Library:AddToRegistry(Inner, {
+	LinoriaLib:AddToRegistry(Inner, {
 		BackgroundColor3 = 'MainColor';
 		BorderColor3 = 'AccentColor';
 	});
 
-	local WindowLabel = Library:CreateLabel({
+	local WindowLabel = LinoriaLib:CreateLabel({
 		Position = UDim2.new(0, 7, 0, 0);
 		Size = UDim2.new(0, 0, 0, 25);
 		Text = Config.Title or '';
@@ -3364,22 +3364,22 @@ function Library:CreateWindow(...)
 		Parent = Inner;
 	});
 
-	local MainSectionOuter = Library:Create('Frame', {
-		BackgroundColor3 = Library.BackgroundColor;
-		BorderColor3 = Library.OutlineColor;
+	local MainSectionOuter = LinoriaLib:Create('Frame', {
+		BackgroundColor3 = LinoriaLib.BackgroundColor;
+		BorderColor3 = LinoriaLib.OutlineColor;
 		Position = UDim2.new(0, 8, 0, 25);
 		Size = UDim2.new(1, -16, 1, -33);
 		ZIndex = 1;
 		Parent = Inner;
 	});
 
-	Library:AddToRegistry(MainSectionOuter, {
+	LinoriaLib:AddToRegistry(MainSectionOuter, {
 		BackgroundColor3 = 'BackgroundColor';
 		BorderColor3 = 'OutlineColor';
 	});
 
-	local MainSectionInner = Library:Create('Frame', {
-		BackgroundColor3 = Library.BackgroundColor;
+	local MainSectionInner = LinoriaLib:Create('Frame', {
+		BackgroundColor3 = LinoriaLib.BackgroundColor;
 		BorderColor3 = Color3.new(0, 0, 0);
 		BorderMode = Enum.BorderMode.Inset;
 		Position = UDim2.new(0, 0, 0, 0);
@@ -3388,11 +3388,11 @@ function Library:CreateWindow(...)
 		Parent = MainSectionOuter;
 	});
 
-	Library:AddToRegistry(MainSectionInner, {
+	LinoriaLib:AddToRegistry(MainSectionInner, {
 		BackgroundColor3 = 'BackgroundColor';
 	});
 
-	local TabArea = Library:Create('ScrollingFrame', {
+	local TabArea = LinoriaLib:Create('ScrollingFrame', {
 		ScrollingDirection = Enum.ScrollingDirection.X;
 		CanvasSize = UDim2.new(0, 0, 2, 0);
 		HorizontalScrollBarInset = Enum.ScrollBarInset.Always;
@@ -3405,7 +3405,7 @@ function Library:CreateWindow(...)
 		Parent = MainSectionInner;
 	});
 
-	local TabListLayout = Library:Create('UIListLayout', {
+	local TabListLayout = LinoriaLib:Create('UIListLayout', {
 		Padding = UDim.new(0, Config.TabPadding);
 		FillDirection = Enum.FillDirection.Horizontal;
 		SortOrder = Enum.SortOrder.LayoutOrder;
@@ -3413,18 +3413,18 @@ function Library:CreateWindow(...)
 		Parent = TabArea;
 	});
 
-	Library:Create('Frame', {
-		BackgroundColor3 = Library.BackgroundColor;
-		BorderColor3 = Library.OutlineColor;
+	LinoriaLib:Create('Frame', {
+		BackgroundColor3 = LinoriaLib.BackgroundColor;
+		BorderColor3 = LinoriaLib.OutlineColor;
 		Size = UDim2.new(0, 0, 0, 0);
 		LayoutOrder = -1;
 		BackgroundTransparency = 1;
 		ZIndex = 1;
 		Parent = TabArea;
 	});
-	Library:Create('Frame', {
-		BackgroundColor3 = Library.BackgroundColor;
-		BorderColor3 = Library.OutlineColor;
+	LinoriaLib:Create('Frame', {
+		BackgroundColor3 = LinoriaLib.BackgroundColor;
+		BorderColor3 = LinoriaLib.OutlineColor;
 		Size = UDim2.new(0, 0, 0, 0);
 		LayoutOrder = 9999999;
 		BackgroundTransparency = 1;
@@ -3432,17 +3432,17 @@ function Library:CreateWindow(...)
 		Parent = TabArea;
 	});
 
-	local TabContainer = Library:Create('Frame', {
-		BackgroundColor3 = Library.MainColor;
-		BorderColor3 = Library.OutlineColor;
+	local TabContainer = LinoriaLib:Create('Frame', {
+		BackgroundColor3 = LinoriaLib.MainColor;
+		BorderColor3 = LinoriaLib.OutlineColor;
 		Position = UDim2.new(0, 8, 0, 30);
 		Size = UDim2.new(1, -16, 1, -38);
 		ZIndex = 2;
 		Parent = MainSectionInner;
 	});
 	
-	local InnerVideoBackground = Library:Create('VideoFrame', {
-		BackgroundColor3 = Library.MainColor;
+	local InnerVideoBackground = LinoriaLib:Create('VideoFrame', {
+		BackgroundColor3 = LinoriaLib.MainColor;
 		BorderMode = Enum.BorderMode.Inset;
 		BorderSizePixel = 0;
 		Position = UDim2.new(0, 1, 0, 1);
@@ -3453,9 +3453,9 @@ function Library:CreateWindow(...)
 		Looped = true;
 		Parent = TabContainer;
 	});
-	Library.InnerVideoBackground = InnerVideoBackground;
+	LinoriaLib.InnerVideoBackground = InnerVideoBackground;
 
-	Library:AddToRegistry(TabContainer, {
+	LinoriaLib:AddToRegistry(TabContainer, {
 		BackgroundColor3 = 'MainColor';
 		BorderColor3 = 'OutlineColor';
 	});
@@ -3470,22 +3470,22 @@ function Library:CreateWindow(...)
 			Tabboxes = {};
 		};
 
-		local TabButtonWidth = Library:GetTextBounds(Name, Library.Font, 16);
+		local TabButtonWidth = LinoriaLib:GetTextBounds(Name, LinoriaLib.Font, 16);
 
-		local TabButton = Library:Create('Frame', {
-			BackgroundColor3 = Library.BackgroundColor;
-			BorderColor3 = Library.OutlineColor;
+		local TabButton = LinoriaLib:Create('Frame', {
+			BackgroundColor3 = LinoriaLib.BackgroundColor;
+			BorderColor3 = LinoriaLib.OutlineColor;
 			Size = UDim2.new(0, TabButtonWidth + 8 + 4, 0.85, 0);
 			ZIndex = 1;
 			Parent = TabArea;
 		});
 
-		Library:AddToRegistry(TabButton, {
+		LinoriaLib:AddToRegistry(TabButton, {
 			BackgroundColor3 = 'BackgroundColor';
 			BorderColor3 = 'OutlineColor';
 		});
 
-		local TabButtonLabel = Library:CreateLabel({
+		local TabButtonLabel = LinoriaLib:CreateLabel({
 			Position = UDim2.new(0, 0, 0, 0);
 			Size = UDim2.new(1, 0, 1, -1);
 			Text = Name;
@@ -3493,8 +3493,8 @@ function Library:CreateWindow(...)
 			Parent = TabButton;
 		});
 
-		local Blocker = Library:Create('Frame', {
-			BackgroundColor3 = Library.MainColor;
+		local Blocker = LinoriaLib:Create('Frame', {
+			BackgroundColor3 = LinoriaLib.MainColor;
 			BorderSizePixel = 0;
 			Position = UDim2.new(0, 0, 1, 0);
 			Size = UDim2.new(1, 0, 0, 1);
@@ -3503,11 +3503,11 @@ function Library:CreateWindow(...)
 			Parent = TabButton;
 		});
 
-		Library:AddToRegistry(Blocker, {
+		LinoriaLib:AddToRegistry(Blocker, {
 			BackgroundColor3 = 'MainColor';
 		});
 
-		local TabFrame = Library:Create('Frame', {
+		local TabFrame = LinoriaLib:Create('Frame', {
 			Name = 'TabFrame',
 			BackgroundTransparency = 1;
 			Position = UDim2.new(0, 0, 0, 0);
@@ -3517,7 +3517,7 @@ function Library:CreateWindow(...)
 			Parent = TabContainer;
 		});
 
-		local LeftSide = Library:Create('ScrollingFrame', {
+		local LeftSide = LinoriaLib:Create('ScrollingFrame', {
 			BackgroundTransparency = 1;
 			BorderSizePixel = 0;
 			Position = UDim2.new(0, 8 - 1, 0, 8 - 1);
@@ -3530,7 +3530,7 @@ function Library:CreateWindow(...)
 			Parent = TabFrame;
 		});
 
-		local RightSide = Library:Create('ScrollingFrame', {
+		local RightSide = LinoriaLib:Create('ScrollingFrame', {
 			BackgroundTransparency = 1;
 			BorderSizePixel = 0;
 			Position = UDim2.new(0.5, 4 + 1, 0, 8 - 1);
@@ -3543,7 +3543,7 @@ function Library:CreateWindow(...)
 			Parent = TabFrame;
 		});
 
-		local FullSize = Library:Create('ScrollingFrame', {
+		local FullSize = LinoriaLib:Create('ScrollingFrame', {
 			BackgroundTransparency = 1;
 			BorderSizePixel = 0;
 			Position = UDim2.new(0, 8 - 1, 0, 8 - 1);
@@ -3556,7 +3556,7 @@ function Library:CreateWindow(...)
 			Parent = TabFrame;
 		});
 
-		Library:Create('UIListLayout', {
+		LinoriaLib:Create('UIListLayout', {
 			Padding = UDim.new(0, 8);
 			FillDirection = Enum.FillDirection.Vertical;
 			SortOrder = Enum.SortOrder.LayoutOrder;
@@ -3564,7 +3564,7 @@ function Library:CreateWindow(...)
 			Parent = LeftSide;
 		});
 
-		Library:Create('UIListLayout', {
+		LinoriaLib:Create('UIListLayout', {
 			Padding = UDim.new(0, 8);
 			FillDirection = Enum.FillDirection.Vertical;
 			SortOrder = Enum.SortOrder.LayoutOrder;
@@ -3572,7 +3572,7 @@ function Library:CreateWindow(...)
 			Parent = RightSide;
 		});
 
-		Library:Create('UIListLayout', {
+		LinoriaLib:Create('UIListLayout', {
 			Padding = UDim.new(0, 8);
 			FillDirection = Enum.FillDirection.Vertical;
 			SortOrder = Enum.SortOrder.LayoutOrder;
@@ -3580,7 +3580,7 @@ function Library:CreateWindow(...)
 			Parent = FullSize;
 		});
 
-		if Library.IsMobile then
+		if LinoriaLib.IsMobile then
 			local SidesValues = {
 				["Left"] = tick(),
 				["Right"] = tick(),
@@ -3588,38 +3588,38 @@ function Library:CreateWindow(...)
 			}
 
 			LeftSide:GetPropertyChangedSignal('CanvasPosition'):Connect(function()
-				Library.CanDrag = false;
+				LinoriaLib.CanDrag = false;
 
 				local ChangeTick = tick();
 				SidesValues.Left = ChangeTick;
 				task.wait(0.15);
 
 				if SidesValues.Left == ChangeTick then
-					Library.CanDrag = true;
+					LinoriaLib.CanDrag = true;
 				end
 			end);
 
 			RightSide:GetPropertyChangedSignal('CanvasPosition'):Connect(function()
-				Library.CanDrag = false;
+				LinoriaLib.CanDrag = false;
 
 				local ChangeTick = tick();
 				SidesValues.Right = ChangeTick;
 				task.wait(0.15);
 				
 				if SidesValues.Right == ChangeTick then
-					Library.CanDrag = true;
+					LinoriaLib.CanDrag = true;
 				end
 			end);
 
 			FullSize:GetPropertyChangedSignal('CanvasPosition'):Connect(function()
-				Library.CanDrag = false;
+				LinoriaLib.CanDrag = false;
 
 				local ChangeTick = tick();
 				SidesValues.Full = ChangeTick;
 				task.wait(0.15);
 				
 				if SidesValues.Full == ChangeTick then
-					Library.CanDrag = true;
+					LinoriaLib.CanDrag = true;
 				end
 			end);
 		end;
@@ -3631,21 +3631,21 @@ function Library:CreateWindow(...)
 		end;
 
 		function Tab:ShowTab()
-			Library.ActiveTab = Name;
+			LinoriaLib.ActiveTab = Name;
 			for _, Tab in next, Window.Tabs do
 				Tab:HideTab();
 			end;
 
 			Blocker.BackgroundTransparency = 0;
-			TabButton.BackgroundColor3 = Library.MainColor;
-			Library.RegistryMap[TabButton].Properties.BackgroundColor3 = 'MainColor';
+			TabButton.BackgroundColor3 = LinoriaLib.MainColor;
+			LinoriaLib.RegistryMap[TabButton].Properties.BackgroundColor3 = 'MainColor';
 			TabFrame.Visible = true;
 		end;
 
 		function Tab:HideTab()
 			Blocker.BackgroundTransparency = 1;
-			TabButton.BackgroundColor3 = Library.BackgroundColor;
-			Library.RegistryMap[TabButton].Properties.BackgroundColor3 = 'BackgroundColor';
+			TabButton.BackgroundColor3 = LinoriaLib.BackgroundColor;
+			LinoriaLib.RegistryMap[TabButton].Properties.BackgroundColor3 = 'BackgroundColor';
 			TabFrame.Visible = false;
 		end;
 
@@ -3661,22 +3661,22 @@ function Library:CreateWindow(...)
 		function Tab:AddGroupbox(Info)
 			local Groupbox = {};
 
-			local BoxOuter = Library:Create('Frame', {
-				BackgroundColor3 = Library.BackgroundColor;
-				BorderColor3 = Library.OutlineColor;
+			local BoxOuter = LinoriaLib:Create('Frame', {
+				BackgroundColor3 = LinoriaLib.BackgroundColor;
+				BorderColor3 = LinoriaLib.OutlineColor;
 				BorderMode = Enum.BorderMode.Inset;
 				Size = UDim2.new(1, 0, 0, 507 + 2);
 				ZIndex = 2;
 				Parent = Info.Side == 1 and LeftSide or RightSide;
 			});
 
-			Library:AddToRegistry(BoxOuter, {
+			LinoriaLib:AddToRegistry(BoxOuter, {
 				BackgroundColor3 = 'BackgroundColor';
 				BorderColor3 = 'OutlineColor';
 			});
 
-			local BoxInner = Library:Create('Frame', {
-				BackgroundColor3 = Library.BackgroundColor;
+			local BoxInner = LinoriaLib:Create('Frame', {
+				BackgroundColor3 = LinoriaLib.BackgroundColor;
 				BorderColor3 = Color3.new(0, 0, 0);
 				-- BorderMode = Enum.BorderMode.Inset;
 				Size = UDim2.new(1, -2, 1, -2);
@@ -3685,23 +3685,23 @@ function Library:CreateWindow(...)
 				Parent = BoxOuter;
 			});
 
-			Library:AddToRegistry(BoxInner, {
+			LinoriaLib:AddToRegistry(BoxInner, {
 				BackgroundColor3 = 'BackgroundColor';
 			});
 
-			local Highlight = Library:Create('Frame', {
-				BackgroundColor3 = Library.AccentColor;
+			local Highlight = LinoriaLib:Create('Frame', {
+				BackgroundColor3 = LinoriaLib.AccentColor;
 				BorderSizePixel = 0;
 				Size = UDim2.new(1, 0, 0, 2);
 				ZIndex = 5;
 				Parent = BoxInner;
 			});
 
-			Library:AddToRegistry(Highlight, {
+			LinoriaLib:AddToRegistry(Highlight, {
 				BackgroundColor3 = 'AccentColor';
 			});
 
-			local GroupboxLabel = Library:CreateLabel({
+			local GroupboxLabel = LinoriaLib:CreateLabel({
 				Size = UDim2.new(1, 0, 0, 18);
 				Position = UDim2.new(0, 4, 0, 2);
 				TextSize = 14;
@@ -3711,7 +3711,7 @@ function Library:CreateWindow(...)
 				Parent = BoxInner;
 			});
 
-			local Container = Library:Create('Frame', {
+			local Container = LinoriaLib:Create('Frame', {
 				BackgroundTransparency = 1;
 				Position = UDim2.new(0, 4, 0, 20);
 				Size = UDim2.new(1, -4, 1, -20);
@@ -3719,7 +3719,7 @@ function Library:CreateWindow(...)
 				Parent = BoxInner;
 			});
 
-			Library:Create('UIListLayout', {
+			LinoriaLib:Create('UIListLayout', {
 				FillDirection = Enum.FillDirection.Vertical;
 				SortOrder = Enum.SortOrder.LayoutOrder;
 				Parent = Container;
@@ -3751,22 +3751,22 @@ function Library:CreateWindow(...)
 		function Tab:AddGroupboxBeta(Info)
 			local Groupbox = {};
 
-			local BoxOuter = Library:Create('Frame', {
-				BackgroundColor3 = Library.BackgroundColor;
-				BorderColor3 = Library.OutlineColor;
+			local BoxOuter = LinoriaLib:Create('Frame', {
+				BackgroundColor3 = LinoriaLib.BackgroundColor;
+				BorderColor3 = LinoriaLib.OutlineColor;
 				BorderMode = Enum.BorderMode.Inset;
 				Size = UDim2.new(1, 0, 0, 507 + 2);
 				ZIndex = 2;
 				Parent = FullSize;
 			});
 
-			Library:AddToRegistry(BoxOuter, {
+			LinoriaLib:AddToRegistry(BoxOuter, {
 				BackgroundColor3 = 'BackgroundColor';
 				BorderColor3 = 'OutlineColor';
 			});
 
-			local BoxInner = Library:Create('Frame', {
-				BackgroundColor3 = Library.BackgroundColor;
+			local BoxInner = LinoriaLib:Create('Frame', {
+				BackgroundColor3 = LinoriaLib.BackgroundColor;
 				BorderColor3 = Color3.new(0, 0, 0);
 				-- BorderMode = Enum.BorderMode.Inset;
 				Size = UDim2.new(1, -2, 1, -2);
@@ -3775,23 +3775,23 @@ function Library:CreateWindow(...)
 				Parent = BoxOuter;
 			});
 
-			Library:AddToRegistry(BoxInner, {
+			LinoriaLib:AddToRegistry(BoxInner, {
 				BackgroundColor3 = 'BackgroundColor';
 			});
 
-			local Highlight = Library:Create('Frame', {
-				BackgroundColor3 = Library.AccentColor;
+			local Highlight = LinoriaLib:Create('Frame', {
+				BackgroundColor3 = LinoriaLib.AccentColor;
 				BorderSizePixel = 0;
 				Size = UDim2.new(1, 0, 0, 2);
 				ZIndex = 5;
 				Parent = BoxInner;
 			});
 
-			Library:AddToRegistry(Highlight, {
+			LinoriaLib:AddToRegistry(Highlight, {
 				BackgroundColor3 = 'AccentColor';
 			});
 
-			local GroupboxLabel = Library:CreateLabel({
+			local GroupboxLabel = LinoriaLib:CreateLabel({
 				Size = UDim2.new(1, 0, 0, 18);
 				Position = UDim2.new(0, 4, 0, 2);
 				TextSize = 14;
@@ -3801,7 +3801,7 @@ function Library:CreateWindow(...)
 				Parent = BoxInner;
 			});
 
-			local Container = Library:Create('Frame', {
+			local Container = LinoriaLib:Create('Frame', {
 				BackgroundTransparency = 1;
 				Position = UDim2.new(0, 4, 0, 20);
 				Size = UDim2.new(1, -4, 1, -20);
@@ -3809,7 +3809,7 @@ function Library:CreateWindow(...)
 				Parent = BoxInner;
 			});
 
-			Library:Create('UIListLayout', {
+			LinoriaLib:Create('UIListLayout', {
 				FillDirection = Enum.FillDirection.Vertical;
 				SortOrder = Enum.SortOrder.LayoutOrder;
 				Parent = Container;
@@ -3851,22 +3851,22 @@ function Library:CreateWindow(...)
 				Tabs = {};
 			};
 
-			local BoxOuter = Library:Create('Frame', {
-				BackgroundColor3 = Library.BackgroundColor;
-				BorderColor3 = Library.OutlineColor;
+			local BoxOuter = LinoriaLib:Create('Frame', {
+				BackgroundColor3 = LinoriaLib.BackgroundColor;
+				BorderColor3 = LinoriaLib.OutlineColor;
 				BorderMode = Enum.BorderMode.Inset;
 				Size = UDim2.new(1, 0, 0, 0);
 				ZIndex = 2;
 				Parent = Info.Side == 1 and LeftSide or RightSide;
 			});
 
-			Library:AddToRegistry(BoxOuter, {
+			LinoriaLib:AddToRegistry(BoxOuter, {
 				BackgroundColor3 = 'BackgroundColor';
 				BorderColor3 = 'OutlineColor';
 			});
 
-			local BoxInner = Library:Create('Frame', {
-				BackgroundColor3 = Library.BackgroundColor;
+			local BoxInner = LinoriaLib:Create('Frame', {
+				BackgroundColor3 = LinoriaLib.BackgroundColor;
 				BorderColor3 = Color3.new(0, 0, 0);
 				-- BorderMode = Enum.BorderMode.Inset;
 				Size = UDim2.new(1, -2, 1, -2);
@@ -3875,23 +3875,23 @@ function Library:CreateWindow(...)
 				Parent = BoxOuter;
 			});
 
-			Library:AddToRegistry(BoxInner, {
+			LinoriaLib:AddToRegistry(BoxInner, {
 				BackgroundColor3 = 'BackgroundColor';
 			});
 
-			local Highlight = Library:Create('Frame', {
-				BackgroundColor3 = Library.AccentColor;
+			local Highlight = LinoriaLib:Create('Frame', {
+				BackgroundColor3 = LinoriaLib.AccentColor;
 				BorderSizePixel = 0;
 				Size = UDim2.new(1, 0, 0, 2);
 				ZIndex = 10;
 				Parent = BoxInner;
 			});
 
-			Library:AddToRegistry(Highlight, {
+			LinoriaLib:AddToRegistry(Highlight, {
 				BackgroundColor3 = 'AccentColor';
 			});
 
-			local TabboxButtons = Library:Create('Frame', {
+			local TabboxButtons = LinoriaLib:Create('Frame', {
 				BackgroundTransparency = 1;
 				Position = UDim2.new(0, 0, 0, 1);
 				Size = UDim2.new(1, 0, 0, 18);
@@ -3899,7 +3899,7 @@ function Library:CreateWindow(...)
 				Parent = BoxInner;
 			});
 
-			Library:Create('UIListLayout', {
+			LinoriaLib:Create('UIListLayout', {
 				FillDirection = Enum.FillDirection.Horizontal;
 				HorizontalAlignment = Enum.HorizontalAlignment.Left;
 				SortOrder = Enum.SortOrder.LayoutOrder;
@@ -3909,19 +3909,19 @@ function Library:CreateWindow(...)
 			function Tabbox:AddTab(Name)
 				local Tab = {};
 
-				local Button = Library:Create('Frame', {
-					BackgroundColor3 = Library.MainColor;
+				local Button = LinoriaLib:Create('Frame', {
+					BackgroundColor3 = LinoriaLib.MainColor;
 					BorderColor3 = Color3.new(0, 0, 0);
 					Size = UDim2.new(0.5, 0, 1, 0);
 					ZIndex = 6;
 					Parent = TabboxButtons;
 				});
 
-				Library:AddToRegistry(Button, {
+				LinoriaLib:AddToRegistry(Button, {
 					BackgroundColor3 = 'MainColor';
 				});
 
-				local ButtonLabel = Library:CreateLabel({
+				local ButtonLabel = LinoriaLib:CreateLabel({
 					Size = UDim2.new(1, 0, 1, 0);
 					TextSize = 14;
 					Text = Name;
@@ -3930,8 +3930,8 @@ function Library:CreateWindow(...)
 					Parent = Button;
 				});
 
-				local Block = Library:Create('Frame', {
-					BackgroundColor3 = Library.BackgroundColor;
+				local Block = LinoriaLib:Create('Frame', {
+					BackgroundColor3 = LinoriaLib.BackgroundColor;
 					BorderSizePixel = 0;
 					Position = UDim2.new(0, 0, 1, 0);
 					Size = UDim2.new(1, 0, 0, 1);
@@ -3940,11 +3940,11 @@ function Library:CreateWindow(...)
 					Parent = Button;
 				});
 
-				Library:AddToRegistry(Block, {
+				LinoriaLib:AddToRegistry(Block, {
 					BackgroundColor3 = 'BackgroundColor';
 				});
 
-				local Container = Library:Create('Frame', {
+				local Container = LinoriaLib:Create('Frame', {
 					BackgroundTransparency = 1;
 					Position = UDim2.new(0, 4, 0, 20);
 					Size = UDim2.new(1, -4, 1, -20);
@@ -3953,7 +3953,7 @@ function Library:CreateWindow(...)
 					Parent = BoxInner;
 				});
 
-				Library:Create('UIListLayout', {
+				LinoriaLib:Create('UIListLayout', {
 					FillDirection = Enum.FillDirection.Vertical;
 					SortOrder = Enum.SortOrder.LayoutOrder;
 					Parent = Container;
@@ -3967,8 +3967,8 @@ function Library:CreateWindow(...)
 					Container.Visible = true;
 					Block.Visible = true;
 
-					Button.BackgroundColor3 = Library.BackgroundColor;
-					Library.RegistryMap[Button].Properties.BackgroundColor3 = 'BackgroundColor';
+					Button.BackgroundColor3 = LinoriaLib.BackgroundColor;
+					LinoriaLib.RegistryMap[Button].Properties.BackgroundColor3 = 'BackgroundColor';
 
 					Tab:Resize();
 				end;
@@ -3977,8 +3977,8 @@ function Library:CreateWindow(...)
 					Container.Visible = false;
 					Block.Visible = false;
 
-					Button.BackgroundColor3 = Library.MainColor;
-					Library.RegistryMap[Button].Properties.BackgroundColor3 = 'MainColor';
+					Button.BackgroundColor3 = LinoriaLib.MainColor;
+					LinoriaLib.RegistryMap[Button].Properties.BackgroundColor3 = 'MainColor';
 				end;
 
 				function Tab:Resize()
@@ -4010,7 +4010,7 @@ function Library:CreateWindow(...)
 				end;
 
 				Button.InputBegan:Connect(function(Input)
-					if (Input.UserInputType == Enum.UserInputType.MouseButton1 and not Library:MouseIsOverOpenedFrame()) or Input.UserInputType == Enum.UserInputType.Touch then
+					if (Input.UserInputType == Enum.UserInputType.MouseButton1 and not LinoriaLib:MouseIsOverOpenedFrame()) or Input.UserInputType == Enum.UserInputType.Touch then
 						Tab:Show();
 						Tab:Resize();
 					end;
@@ -4052,8 +4052,8 @@ function Library:CreateWindow(...)
 		end);
 
 		-- This was the first tab added, so we show it by default.
-	Library.TotalTabs = Library.TotalTabs + 1;
-		if Library.TotalTabs == 1 then
+	LinoriaLib.TotalTabs = LinoriaLib.TotalTabs + 1;
+		if LinoriaLib.TotalTabs == 1 then
 			Tab:ShowTab();
 		end;
 
@@ -4061,7 +4061,7 @@ function Library:CreateWindow(...)
 		return Tab;
 	end;
 
-	local ModalElement = Library:Create('TextButton', {
+	local ModalElement = LinoriaLib:Create('TextButton', {
 		BackgroundTransparency = 1;
 		Size = UDim2.new(0, 0, 0, 0);
 		Visible = true;
@@ -4074,7 +4074,7 @@ function Library:CreateWindow(...)
 	local Toggled = false;
 	local Fading = false;
 	
-	function Library:Toggle()
+	function LinoriaLib:Toggle()
 		if Fading then
 			return;
 		end;
@@ -4082,14 +4082,14 @@ function Library:CreateWindow(...)
 		local FadeTime = Config.MenuFadeTime;
 		Fading = true;
 		Toggled = (not Toggled);
-		Library.Toggled = Toggled;
+		LinoriaLib.Toggled = Toggled;
 		ModalElement.Modal = Toggled;
 
 		if Toggled then
 			-- A bit scuffed, but if we're going from not toggled -> toggled we want to show the frame immediately so that the fade is visible.
 			Outer.Visible = true;
 
-			if Library.ShowCustomCursor and Drawing then
+			if LinoriaLib.ShowCustomCursor and Drawing then
 				local Cursor = Drawing.new("Triangle")
 				Cursor.Thickness = 1
 				Cursor.Filled = true
@@ -4105,14 +4105,14 @@ function Library:CreateWindow(...)
 					InputService.MouseIconEnabled = false
 					local mPos = InputService:GetMouseLocation()
 					local X, Y = mPos.X, mPos.Y
-					Cursor.Color = Library.AccentColor
+					Cursor.Color = LinoriaLib.AccentColor
 					Cursor.PointA = Vector2.new(X, Y)
 					Cursor.PointB = Vector2.new(X + 16, Y + 6)
 					Cursor.PointC = Vector2.new(X + 6, Y + 16)
 					CursorOutline.PointA = Cursor.PointA
 					CursorOutline.PointB = Cursor.PointB
 					CursorOutline.PointC = Cursor.PointC
-					if ScreenGui ~= nil and not (Toggled and ScreenGui.Parent and Library.ShowCustomCursor) then
+					if ScreenGui ~= nil and not (Toggled and ScreenGui.Parent and LinoriaLib.ShowCustomCursor) then
 						InputService.MouseIconEnabled = OldMouseIconState
 						Cursor:Destroy()
 						CursorOutline:Destroy()
@@ -4169,18 +4169,18 @@ function Library:CreateWindow(...)
 		Fading = false;
 	end
 
-	Library:GiveSignal(InputService.InputBegan:Connect(function(Input, Processed)
-		if type(Library.ToggleKeybind) == 'table' and Library.ToggleKeybind.Type == 'KeyPicker' then
-			if Input.UserInputType == Enum.UserInputType.Keyboard and Input.KeyCode.Name == Library.ToggleKeybind.Value then
-				task.spawn(Library.Toggle)
+	LinoriaLib:GiveSignal(InputService.InputBegan:Connect(function(Input, Processed)
+		if type(LinoriaLib.ToggleKeybind) == 'table' and LinoriaLib.ToggleKeybind.Type == 'KeyPicker' then
+			if Input.UserInputType == Enum.UserInputType.Keyboard and Input.KeyCode.Name == LinoriaLib.ToggleKeybind.Value then
+				task.spawn(LinoriaLib.Toggle)
 			end
 		elseif Input.KeyCode == Enum.KeyCode.RightControl or (Input.KeyCode == Enum.KeyCode.RightShift and (not Processed)) then
-			task.spawn(Library.Toggle)
+			task.spawn(LinoriaLib.Toggle)
 		end
 	end));
 
-	if Library.IsMobile then
-		local ToggleUIOuter = Library:Create('Frame', {
+	if LinoriaLib.IsMobile then
+		local ToggleUIOuter = LinoriaLib:Create('Frame', {
 			BorderColor3 = Color3.new(0, 0, 0);
 			Position = UDim2.new(0.008, 0, 0.018, 0);
 			Size = UDim2.new(0, 77, 0, 30);
@@ -4189,20 +4189,20 @@ function Library:CreateWindow(...)
 			Parent = ScreenGui;
 		});
 	
-		local ToggleUIInner = Library:Create('Frame', {
-			BackgroundColor3 = Library.MainColor;
-			BorderColor3 = Library.AccentColor;
+		local ToggleUIInner = LinoriaLib:Create('Frame', {
+			BackgroundColor3 = LinoriaLib.MainColor;
+			BorderColor3 = LinoriaLib.AccentColor;
 			BorderMode = Enum.BorderMode.Inset;
 			Size = UDim2.new(1, 0, 1, 0);
 			ZIndex = 201;
 			Parent = ToggleUIOuter;
 		});
 	
-		Library:AddToRegistry(ToggleUIInner, {
+		LinoriaLib:AddToRegistry(ToggleUIInner, {
 			BorderColor3 = 'AccentColor';
 		});
 	
-		local ToggleUIInnerFrame = Library:Create('Frame', {
+		local ToggleUIInnerFrame = LinoriaLib:Create('Frame', {
 			BackgroundColor3 = Color3.new(1, 1, 1);
 			BorderSizePixel = 0;
 			Position = UDim2.new(0, 1, 0, 1);
@@ -4211,31 +4211,31 @@ function Library:CreateWindow(...)
 			Parent = ToggleUIInner;
 		});
 	
-		local ToggleUIGradient = Library:Create('UIGradient', {
+		local ToggleUIGradient = LinoriaLib:Create('UIGradient', {
 			Color = ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Library:GetDarkerColor(Library.MainColor)),
-				ColorSequenceKeypoint.new(1, Library.MainColor),
+				ColorSequenceKeypoint.new(0, LinoriaLib:GetDarkerColor(LinoriaLib.MainColor)),
+				ColorSequenceKeypoint.new(1, LinoriaLib.MainColor),
 			});
 			Rotation = -90;
 			Parent = ToggleUIInnerFrame;
 		});
 	
-		Library:AddToRegistry(ToggleUIGradient, {
+		LinoriaLib:AddToRegistry(ToggleUIGradient, {
 			Color = function()
 				return ColorSequence.new({
-					ColorSequenceKeypoint.new(0, Library:GetDarkerColor(Library.MainColor)),
-					ColorSequenceKeypoint.new(1, Library.MainColor),
+					ColorSequenceKeypoint.new(0, LinoriaLib:GetDarkerColor(LinoriaLib.MainColor)),
+					ColorSequenceKeypoint.new(1, LinoriaLib.MainColor),
 				});
 			end
 		});
 	
-		local ToggleUIButton = Library:Create('TextButton', {
+		local ToggleUIButton = LinoriaLib:Create('TextButton', {
 			Position = UDim2.new(0, 5, 0, 0);
 			Size = UDim2.new(1, -4, 1, 0);
 			BackgroundTransparency = 1;
-			Font = Library.Font;
+			Font = LinoriaLib.Font;
 			Text = "Toggle UI";
-			TextColor3 = Library.FontColor;
+			TextColor3 = LinoriaLib.FontColor;
 			TextSize = 14;
 			TextXAlignment = Enum.TextXAlignment.Left;
 			TextStrokeTransparency = 0;
@@ -4243,14 +4243,14 @@ function Library:CreateWindow(...)
 			Parent = ToggleUIInnerFrame;
 		});
 	
-		Library:MakeDraggable(ToggleUIOuter);
+		LinoriaLib:MakeDraggable(ToggleUIOuter);
 
 		ToggleUIButton.MouseButton1Down:Connect(function()
-			task.spawn(Library.Toggle)
+			task.spawn(LinoriaLib.Toggle)
 		end)
 
 	-- Lock
-	local LockUIOuter = Library:Create('Frame', {
+	local LockUIOuter = LinoriaLib:Create('Frame', {
 			BorderColor3 = Color3.new(0, 0, 0);
 			Position = UDim2.new(0.008, 0, 0.075, 0);
 			Size = UDim2.new(0, 77, 0, 30);
@@ -4259,20 +4259,20 @@ function Library:CreateWindow(...)
 			Parent = ScreenGui;
 		});
 	
-		local LockUIInner = Library:Create('Frame', {
-			BackgroundColor3 = Library.MainColor;
-			BorderColor3 = Library.AccentColor;
+		local LockUIInner = LinoriaLib:Create('Frame', {
+			BackgroundColor3 = LinoriaLib.MainColor;
+			BorderColor3 = LinoriaLib.AccentColor;
 			BorderMode = Enum.BorderMode.Inset;
 			Size = UDim2.new(1, 0, 1, 0);
 			ZIndex = 201;
 			Parent = LockUIOuter;
 		});
 	
-		Library:AddToRegistry(LockUIInner, {
+		LinoriaLib:AddToRegistry(LockUIInner, {
 			BorderColor3 = 'AccentColor';
 		});
 	
-		local LockUIInnerFrame = Library:Create('Frame', {
+		local LockUIInnerFrame = LinoriaLib:Create('Frame', {
 			BackgroundColor3 = Color3.new(1, 1, 1);
 			BorderSizePixel = 0;
 			Position = UDim2.new(0, 1, 0, 1);
@@ -4281,31 +4281,31 @@ function Library:CreateWindow(...)
 			Parent = LockUIInner;
 		});
 	
-		local LockUIGradient = Library:Create('UIGradient', {
+		local LockUIGradient = LinoriaLib:Create('UIGradient', {
 			Color = ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Library:GetDarkerColor(Library.MainColor)),
-				ColorSequenceKeypoint.new(1, Library.MainColor),
+				ColorSequenceKeypoint.new(0, LinoriaLib:GetDarkerColor(LinoriaLib.MainColor)),
+				ColorSequenceKeypoint.new(1, LinoriaLib.MainColor),
 			});
 			Rotation = -90;
 			Parent = LockUIInnerFrame;
 		});
 	
-		Library:AddToRegistry(LockUIGradient, {
+		LinoriaLib:AddToRegistry(LockUIGradient, {
 			Color = function()
 				return ColorSequence.new({
-					ColorSequenceKeypoint.new(0, Library:GetDarkerColor(Library.MainColor)),
-					ColorSequenceKeypoint.new(1, Library.MainColor),
+					ColorSequenceKeypoint.new(0, LinoriaLib:GetDarkerColor(LinoriaLib.MainColor)),
+					ColorSequenceKeypoint.new(1, LinoriaLib.MainColor),
 				});
 			end
 		});
 	
-		local LockUIButton = Library:Create('TextButton', {
+		local LockUIButton = LinoriaLib:Create('TextButton', {
 			Position = UDim2.new(0, 5, 0, 0);
 			Size = UDim2.new(1, -4, 1, 0);
 			BackgroundTransparency = 1;
-			Font = Library.Font;
+			Font = LinoriaLib.Font;
 			Text = "Lock UI";
-			TextColor3 = Library.FontColor;
+			TextColor3 = LinoriaLib.FontColor;
 			TextSize = 14;
 			TextXAlignment = Enum.TextXAlignment.Left;
 			TextStrokeTransparency = 0;
@@ -4313,18 +4313,18 @@ function Library:CreateWindow(...)
 			Parent = LockUIInnerFrame;
 		});
 	
-		Library:MakeDraggable(LockUIOuter);
+		LinoriaLib:MakeDraggable(LockUIOuter);
 		
 		LockUIButton.MouseButton1Down:Connect(function()
-			Library.CantDragForced = not Library.CantDragForced;
+			LinoriaLib.CantDragForced = not LinoriaLib.CantDragForced;
 		end)
 	end;
 
-	if Config.AutoShow then task.spawn(Library.Toggle) end
+	if Config.AutoShow then task.spawn(LinoriaLib.Toggle) end
 
 	Window.Holder = Outer;
 
-	Library.Window = Window;
+	LinoriaLib.Window = Window;
 	return Window;
 end;
 
@@ -4341,5 +4341,5 @@ end;
 Players.PlayerAdded:Connect(OnPlayerChange);
 Players.PlayerRemoving:Connect(OnPlayerChange);
 
-getgenv().Library = Library
-return Library
+getgenv().LinoriaLib = LinoriaLib
+return LinoriaLib
