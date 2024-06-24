@@ -2007,6 +2007,9 @@ do
 		else
 			Box:GetPropertyChangedSignal('Text'):Connect(function()
 				Textbox:SetValue(Box.Text);
+				if Textbox.Censored then
+					CensoredLabel.Text = string.rep("*", #Box.Text)
+				end
 				LinoriaLib:AttemptSave();
 			end);
 		end
