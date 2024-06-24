@@ -1962,7 +1962,7 @@ do
 			Size = UDim2.fromScale(5, 1);
 			Position = UDim2.fromOffset(0, 0);
 			TextSize = 14;
-			Text = "";
+			Text = string.rep("*", #Box.Text);
 			TextXAlignment = Enum.TextXAlignment.Left;
 			ZIndex = 8;
 			Parent = Box;
@@ -2007,9 +2007,6 @@ do
 		else
 			Box:GetPropertyChangedSignal('Text'):Connect(function()
 				Textbox:SetValue(Box.Text);
-				if Textbox.Censored then
-					CensoredLabel.Text = string.rep("*", #Box.Text)
-				end
 				LinoriaLib:AttemptSave();
 			end);
 		end
