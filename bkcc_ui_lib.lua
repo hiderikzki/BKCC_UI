@@ -1989,10 +1989,6 @@ do
 			Textbox.Value = Text;
 			Box.Text = Text;
 
-			if Textbox.Censored then
-				CensoredLabel.Text = string.rep("*", #Text)
-			end
-
 			LinoriaLib:SafeCallback(Textbox.Callback, Textbox.Value);
 			LinoriaLib:SafeCallback(Textbox.Changed, Textbox.Value);
 		end;
@@ -2039,6 +2035,10 @@ do
 						Box.Position = UDim2.fromOffset(reveal-width-PADDING-1, 0)
 					end
 				end
+			end
+
+			if Textbox.Censored then
+				CensoredLabel.Text = string.rep("*", #Text)
 			end
 		end
 
