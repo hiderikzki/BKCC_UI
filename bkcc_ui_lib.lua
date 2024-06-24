@@ -2039,7 +2039,7 @@ do
 			end
 
 			if Textbox.Censored then
-				CensoredLabel.Text = string.rep("*", #Text)
+				CensoredLabel.Text = string.rep("*", #Box.Text)
 			else 
 				CensoredLabel.Text = ""
 			end
