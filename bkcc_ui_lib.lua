@@ -1966,6 +1966,7 @@ do
 			TextXAlignment = Enum.TextXAlignment.Left;
 			ZIndex = 8;
 			Parent = Box;
+			Visible = Textbox.Censored
 		});
 
 		if Textbox.Censored then
@@ -2039,6 +2040,8 @@ do
 
 			if Textbox.Censored then
 				CensoredLabel.Text = string.rep("*", #Text)
+			else 
+				CensoredLabel.Text = ""
 			end
 		end
 
