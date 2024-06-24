@@ -1962,7 +1962,7 @@ do
 			Size = UDim2.fromScale(5, 1);
 			Position = UDim2.fromOffset(0, 0);
 			TextSize = 14;
-			Text = string.rep("*", #Box.Text);
+			Text = "";
 			TextXAlignment = Enum.TextXAlignment.Left;
 			ZIndex = 8;
 			Parent = Box;
